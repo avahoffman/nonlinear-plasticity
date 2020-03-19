@@ -1,6 +1,13 @@
-wd <- '/Users/avahoffman/Dropbox/Research/Andropogon_geno_drought_study_2014/Revision_1'
-setwd(wd)
-df <- read.csv("theoretical_fig.csv",header=T)
+###########################################################################################
+# MAKE THE THEORETICAL FIGURE FEATURED IN THE MANUSCRIPT
+###########################################################################################
+
+
+make_theor_fig <- 
+  function() {}
+
+
+df <- read.csv("data/theoretical_fig.csv",header=T)
 d1 <- df[grep("1", df$plot), ]
 d2 <- df[grep("2", df$plot), ]
 d3 <- df[grep("3", df$plot), ]
