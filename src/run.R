@@ -14,8 +14,12 @@ sessionInfo()
 
 # Specific functions
 source("src/theoretical_fig.R")
+source("src/corr_analysis.R")
 
 ###########################################################################################
 
 # Make the theoretical figure
 make_theor_fig(outfile = "figures/theoretical_fig.pdf")
+
+# Run correlations to see if perhaps we should select only a few key traits
+run_corr_tests()
