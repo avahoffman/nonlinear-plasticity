@@ -7,6 +7,7 @@ wd <-
   "/Users/avahoffman/Dropbox/Research/Andropogon_geno_drought_study_2014/nonlinear-plasticity"
 
 setwd(wd)
+sessionInfo()
 
 # General functions and configuration
 # source("utils/data_utils.R")
@@ -14,7 +15,7 @@ setwd(wd)
 # Specific functions
 source("src/theoretical_fig.R")
 
-# TODO : Update readme with new file structure
-
 ###########################################################################################
 
+# Make the theoretical figure
+make_theor_fig(outfile = "figures/theoretical_fig.pdf")
