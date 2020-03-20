@@ -8,25 +8,35 @@ run_mcmc <-
            infile,
            response,
            iter = 10000) {
-    # This function ..
+    # This function runs the MCMC sampler and makes a fit summary
+    
+    # Read in data
     df <-
       read.csv(infile, header = T)
+    
+    # Filter out NA response variable
     response.1 <-
       df[, c(response)]
     df.filt <-
       df[!(response.1 = is.na(response.1)),]
-    nrow(df.filt) ## ALLOWS N TO VARY
+    
+    # Make design matrix
     dm <-
       model.matrix(~ as.factor(trt) * as.factor(geno), data = df.filt) # Model Matrix
+    
+    # New dependent variable with NA removed
     response.var <-
-      df.filt[, c(response)] ## NEW DEPENDENT VAR WITH NAs REMOVED
+      df.filt[, c(response)]
+    
+    # Declare model components
     model.components <-
       list(
-        'N' = nrow(df.filt),
+        'N' = nrow(df.filt), # 
         'y' = response.var,
         'X' = dm,
         'J' = ncol(dm)
       )
+    
     ##SAMPLE
     fit <-
       sampling(
@@ -45,7 +55,8 @@ run_mcmc <-
 
 
 gather_posterior_data <-
-  function(summ_fit) {
+  function(summ_fit,
+           response) {
     ests <-
       # Collect mean, 25-75, CI, and Rhat
       (summ_fit[grep("b", rownames(summ_fit)), c(1, 5, 6, 4, 8, 10)])
