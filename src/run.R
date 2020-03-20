@@ -14,12 +14,28 @@ sessionInfo()
 
 # Specific functions
 source("src/theoretical_fig.R")
+source("src/data_clean.R")
 source("src/corr_analysis.R")
+source("src/pca.R")
+source("src/measure_models.R")
 
 ###########################################################################################
 
 # Make the theoretical figure
 make_theor_fig(outfile = "figures/theoretical_fig.pdf")
 
+# Clean data
+clean_biomass_data()
+clean_phys_data()
+clean_all_plant_data()
+clean_recovery_data()
+
 # Run correlations to see if perhaps we should select only a few key traits
+# TODO: Fix these according to cleaned data
 run_corr_tests()
+
+# Run principal components analysis to determine traits of interest
+produce_prcomps()
+
+# Modeling ----
+

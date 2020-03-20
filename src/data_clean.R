@@ -318,9 +318,3 @@ clean_recovery_data <-
     
     write.csv(df, file = paste("data/", infile, "_clean.csv", sep = ""))
   }
-
-
-clean_biomass_data()
-clean_phys_data()
-clean_all_plant_data()
-clean_recovery_data()
