@@ -7,7 +7,7 @@ run_mcmc <-
   function(comp,
            infile,
            response,
-           iter = 100000) {
+           iter = 10000) {
     # This function runs the MCMC sampler and makes a fit summary
     
     # Read in data
@@ -58,11 +58,19 @@ gather_posterior_data <-
   function(summ_fit,
            response,
            recovery = F) {
-    ests <-
+    ests <- rbind(
       # Collect mean, 25-75, CI, and Rhat
-      (summ_fit[grep("b", rownames(summ_fit)), c(1, 5, 6, 4, 8, 10)])
+      (summ_fit[grep("b", rownames(summ_fit)), c(1, 5, 7, 4, 8, 10)]),
+      (summ_fit[grep("G", rownames(summ_fit)), c(1, 5, 7, 4, 8, 10)]),
+      (summ_fit[grep("T", rownames(summ_fit)), c(1, 5, 7, 4, 8, 10)])
+    )
     descr <- gsub("as.factor", "", colnames(dm))
-    descr <- gsub("geno)3", "geno)5", descr)
+    descr <- c(gsub("geno)3", "geno)5", descr), rep("no_descr", 10))
+    
+    param <- c(rep("beta", 15), rep("geno_avg",3), "geno_effect", rep("trt_avg", 5), "trt_effect")
+    
+    ests <- cbind(param, ests)
+    
     if (!(recovery)){
       ests <- cbind(rep(response, nrow(ests)), descr, ests)
     } else {
@@ -71,7 +79,7 @@ gather_posterior_data <-
     
     # Calculate Pr
     Pr_calc <- data.frame()
-    Pr_vals <-  as.data.frame(ests[, 6:7])
+    Pr_vals <-  as.data.frame(ests[, 7:8])
     for (r in 1:nrow(Pr_vals)) {
       max_ <- max(Pr_vals[r,])
       min_ <- min(Pr_vals[r,])
@@ -90,7 +98,7 @@ gather_posterior_data <-
       Pr_calc[r, 1] <- round(pr., 2)
     }
     ests <- cbind(ests, Pr_calc)
-    colnames(ests)[9] <- "Pr"
+    colnames(ests)[10] <- "Pr"
     colnames(ests)[1] <- "measure"
     
     return(ests)
@@ -115,3 +123,54 @@ make_normality_plots <-
     test_norm(rdf$mean)
     dev.off()
   }
+
+
+run_flwr_mcmc <- 
+  function(comp){
+    # This function
+    
+    # Read in data
+    df <-
+      read.csv("data/recovery_plants_clean.csv", header = T)
+    response <- "Bf"
+    
+    # Filter out NA response variable
+    response.1 <-
+      df[, c(response)]
+    df.filt <-
+      df[!(response.1 = is.na(response.1)),]
+    
+    # Make design matrix
+    dm <-
+      model.matrix(~ as.factor(trt) * as.factor(geno), data = df.filt) # Model Matrix
+    
+    # New dependent variable with NA removed
+    response.var <-
+      df.filt[, c(response)]
+    
+    # Declare model components
+    model.components <- list(
+      'N' = nrow(df.filt),
+      'y' = response.var,
+      'X' = dm,
+      'J' = ncol(dm),
+      'w' = df.filt$did_flwr, # Binary, whether plant flowered or not
+      'geno' = df.filt$geno,
+      'G' = 3
+    )
+    
+    ##SAMPLE
+    fit <-
+      sampling(
+        comp,
+        data = model.components,
+        iter = iter,
+        warmup = iter / 2,
+        thin = 1,
+        chains = 3
+      )
+    summ_fit <-
+      summary(fit)
+    
+    return(as.data.frame(summ_fit$summary))
+    }

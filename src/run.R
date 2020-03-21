@@ -10,7 +10,7 @@ setwd(wd)
 sessionInfo()
 
 # General functions and configuration
-# source("utils/data_utils.R")
+source("src/utils.R")
 
 # Specific functions
 source("src/theoretical_fig.R")
@@ -31,11 +31,11 @@ clean_all_plant_data()
 clean_recovery_data()
 
 # Run correlations to see if perhaps we should select only a few key traits
-# TODO: Fix these according to cleaned data
+# TODO: Rerun these before publication / make sure indices are right in the corr_analysis script.
 run_corr_tests()
 
 # Run principal components analysis to determine traits of interest
 produce_prcomps()
 
 # Modeling ----
-
+do_measure_mcmc_sampling()

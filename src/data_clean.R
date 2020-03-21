@@ -21,9 +21,9 @@ clean_biomass_data <-
     }
     
     write.csv(df, file = paste("data/", infile, "_clean.csv", sep = ""))
-  }    
-    
-    
+  }
+
+
 clean_phys_data <-
   function() {
     infile <- "phys_plants"
@@ -76,45 +76,53 @@ clean_phys_data <-
           na.rm = T
         )
       df$ugs[i] <-
-        mean(c(
-          df$gs5_0907[i],
-          df$gs6_0913[i],
-          df$gs7_0920[i],
-          df$gs8_0925[i],
-          df$gs9_1004[i],
-          df$gs10_1011[i]
-        ),
-        na.rm = T)
+        mean(
+          c(
+            df$gs5_0907[i],
+            df$gs6_0913[i],
+            df$gs7_0920[i],
+            df$gs8_0925[i],
+            df$gs9_1004[i],
+            df$gs10_1011[i]
+          ),
+          na.rm = T
+        )
       df$ufv[i] <-
-        mean(c(
-          df$fv5_0907[i],
-          df$fv6_0913[i],
-          df$fv7_0920[i],
-          df$fv8_0925[i],
-          df$fv9_1004[i],
-          df$fv10_1011[i]
-        ),
-        na.rm = T)
+        mean(
+          c(
+            df$fv5_0907[i],
+            df$fv6_0913[i],
+            df$fv7_0920[i],
+            df$fv8_0925[i],
+            df$fv9_1004[i],
+            df$fv10_1011[i]
+          ),
+          na.rm = T
+        )
       df$uE[i] <-
-        mean(c(
-          df$E5_0907[i],
-          df$E6_0913[i],
-          df$E7_0920[i],
-          df$E8_0925[i],
-          df$E9_1004[i],
-          df$E10_1011[i]
-        ),
-        na.rm = T)
+        mean(
+          c(
+            df$E5_0907[i],
+            df$E6_0913[i],
+            df$E7_0920[i],
+            df$E8_0925[i],
+            df$E9_1004[i],
+            df$E10_1011[i]
+          ),
+          na.rm = T
+        )
       df$uWUEi[i] <-
-        mean(c(
-          df$WUEi5_0907[i],
-          df$WUEi6_0913[i],
-          df$WUEi7_0920[i],
-          df$WUEi8_0925[i],
-          df$WUEi9_1004[i],
-          df$WUEi10_1011[i]
-        ),
-        na.rm = T)
+        mean(
+          c(
+            df$WUEi5_0907[i],
+            df$WUEi6_0913[i],
+            df$WUEi7_0920[i],
+            df$WUEi8_0925[i],
+            df$WUEi9_1004[i],
+            df$WUEi10_1011[i]
+          ),
+          na.rm = T
+        )
       
       # measure max
       df$max_Anet[i] <-
@@ -130,45 +138,53 @@ clean_phys_data <-
           na.rm = T
         )
       df$max_gs[i] <-
-        max(c(
-          df$gs5_0907[i],
-          df$gs6_0913[i],
-          df$gs7_0920[i],
-          df$gs8_0925[i],
-          df$gs9_1004[i],
-          df$gs10_1011[i]
-        ),
-        na.rm = T)
+        max(
+          c(
+            df$gs5_0907[i],
+            df$gs6_0913[i],
+            df$gs7_0920[i],
+            df$gs8_0925[i],
+            df$gs9_1004[i],
+            df$gs10_1011[i]
+          ),
+          na.rm = T
+        )
       df$max_fv[i] <-
-        max(c(
-          df$fv5_0907[i],
-          df$fv6_0913[i],
-          df$fv7_0920[i],
-          df$fv8_0925[i],
-          df$fv9_1004[i],
-          df$fv10_1011[i]
-        ),
-        na.rm = T)
+        max(
+          c(
+            df$fv5_0907[i],
+            df$fv6_0913[i],
+            df$fv7_0920[i],
+            df$fv8_0925[i],
+            df$fv9_1004[i],
+            df$fv10_1011[i]
+          ),
+          na.rm = T
+        )
       df$max_E[i] <-
-        max(c(
-          df$E5_0907[i],
-          df$E6_0913[i],
-          df$E7_0920[i],
-          df$E8_0925[i],
-          df$E9_1004[i],
-          df$E10_1011[i]
-        ),
-        na.rm = T)
+        max(
+          c(
+            df$E5_0907[i],
+            df$E6_0913[i],
+            df$E7_0920[i],
+            df$E8_0925[i],
+            df$E9_1004[i],
+            df$E10_1011[i]
+          ),
+          na.rm = T
+        )
       df$max_WUEi[i] <-
-        max(c(
-          df$WUEi5_0907[i],
-          df$WUEi6_0913[i],
-          df$WUEi7_0920[i],
-          df$WUEi8_0925[i],
-          df$WUEi9_1004[i],
-          df$WUEi10_1011[i]
-        ),
-        na.rm = T)
+        max(
+          c(
+            df$WUEi5_0907[i],
+            df$WUEi6_0913[i],
+            df$WUEi7_0920[i],
+            df$WUEi8_0925[i],
+            df$WUEi9_1004[i],
+            df$WUEi10_1011[i]
+          ),
+          na.rm = T
+        )
     }
     
     write.csv(df, file = paste("data/", infile, "_clean.csv", sep = ""))
@@ -248,7 +264,7 @@ clean_all_plant_data <-
     }
     
     write.csv(df, file = paste("data/", infile, "_clean.csv", sep = ""))
-  }   
+  }
 
 
 clean_recovery_data <-
@@ -269,16 +285,14 @@ clean_recovery_data <-
     for (i in 1:nrow(df)) {
       # Measure means
       df$uH[i] <-
-        mean(
-          c(
-            df$H11_1023[i],
-            df$H12_1104[i],
-            df$H13_1111[i],
-            df$H14_1117[i],
-            df$H15_1124[i]
-          ),
-          na.rm = T
-        )
+        mean(c(
+          df$H11_1023[i],
+          df$H12_1104[i],
+          df$H13_1111[i],
+          df$H14_1117[i],
+          df$H15_1124[i]
+        ),
+        na.rm = T)
       df$urgr[i] <-
         mean(
           c(
@@ -293,16 +307,14 @@ clean_recovery_data <-
       
       # Measure max
       df$max_H[i] <-
-        max(
-          c(
-            df$H11_1023[i],
-            df$H12_1104[i],
-            df$H13_1111[i],
-            df$H14_1117[i],
-            df$H15_1124[i]
-          ),
-          na.rm = T
-        )
+        max(c(
+          df$H11_1023[i],
+          df$H12_1104[i],
+          df$H13_1111[i],
+          df$H14_1117[i],
+          df$H15_1124[i]
+        ),
+        na.rm = T)
       df$max_rgr[i] <-
         max(
           c(

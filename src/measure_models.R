@@ -29,6 +29,11 @@ Stan_model <- "
         generated quantities{
         vector[N] e_y;
         vector[15] Y;
+        vector[3] G;
+        vector[5] T;
+        vector[1] G_E;
+        vector[1] T_E;
+        
         Y[1] = b[1];
         Y[2] = b[1] + b[2];
         Y[3] = b[1] + b[3];
@@ -44,6 +49,21 @@ Stan_model <- "
         Y[13] = b[1] + b[3] + b[7] + b[13];
         Y[14] = b[1] + b[4] + b[7] + b[14];
         Y[15] = b[1] + b[5] + b[7] + b[15];
+        
+        G[1] = ( b[1] + (b[1] + b[2]) + (b[1] + b[3]) + (b[1] + b[4]) + (b[1] + b[5])) / 5 ;
+        G[2] = ( (b[1] + b[6]) + (b[1] + b[2] + b[6] + b[8]) + (b[1] + b[3] + b[6] + b[9]) + (b[1] + b[4] + b[6] + b[10]) + (b[1] + b[5] + b[6] + b[11])) / 5 ;
+        G[3] = ( (b[1] + b[7]) + (b[1] + b[2] + b[7] + b[12]) + (b[1] + b[3] + b[7] + b[13]) + (b[1] + b[4] + b[7] + b[14]) + (b[1] + b[5] + b[7] + b[15])) / 5 ;
+        
+        T[1] = ( b[1] + (b[1] + b[6]) + (b[1] + b[7])) / 3 ;
+        T[2] = ( (b[1] + b[2]) + (b[1] + b[2] + b[6] + b[8]) + (b[1] + b[2] + b[7] + b[12]) ) / 3 ;
+        T[3] = ( (b[1] + b[3]) + (b[1] + b[3] + b[6] + b[9]) + (b[1] + b[3] + b[7] + b[13]) ) / 3 ;
+        T[4] = ( (b[1] + b[4]) + (b[1] + b[4] + b[6] + b[10]) + (b[1] + b[4] + b[7] + b[14]) ) / 3 ;
+        T[5] = ( (b[1] + b[5]) + (b[1] + b[5] + b[6] + b[11]) + (b[1] + b[5] + b[7] + b[15]) ) / 3 ;
+        
+        G_E[1] = ( b[6] + b[7] ) / 2 ; 
+        
+        T_E[1] = ( b[2] + b[3] + b[4] + b[5] ) / 4 ; 
+        
         e_y = y - mu;
         }
       "
@@ -63,19 +83,23 @@ run_measure_model <-
                response = response)
     
     # Append parameter results
-    if (response == "Bv"){
+    if (response == "Bv") {
       write_col = NA
     } else {
       write_col = F
     }
-    write.table(gather_posterior_data(summ_fit = summ, 
-                                      response = response, 
-                                      recovery = recovery),
-              file = "output/posterior_output.csv",
-              sep = ",",
-              col.names = write_col,
-              row.names = T,
-              append = T)
+    write.table(
+      gather_posterior_data(
+        summ_fit = summ,
+        response = response,
+        recovery = recovery
+      ),
+      file = "output/posterior_output.csv",
+      sep = ",",
+      col.names = write_col,
+      row.names = T,
+      append = T
+    )
     
     # Run posterior predictive checks
     make_normality_plots(summ,
@@ -85,7 +109,7 @@ run_measure_model <-
 
 do_measure_mcmc_sampling <-
   function() {
-    comp <- 
+    comp <-
       stan_model(model_code = Stan_model)
     
     # Morphology
@@ -106,7 +130,7 @@ do_measure_mcmc_sampling <-
     run_measure_model(comp, response = "ssa")
     
     # Physiology
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/phys_plants_clean.csv",
                       response = "uAnet")
     run_measure_model(comp,
@@ -121,7 +145,7 @@ do_measure_mcmc_sampling <-
     run_measure_model(comp,
                       infile = "data/phys_plants_clean.csv",
                       response = "uWUEi")
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/phys_plants_clean.csv",
                       response = "max_Anet")
     run_measure_model(comp,
@@ -138,65 +162,65 @@ do_measure_mcmc_sampling <-
                       response = "max_WUEi")
     
     # All plants
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/all_plants_clean.csv",
                       response = "uH")
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/all_plants_clean.csv",
                       response = "urgr")
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/all_plants_clean.csv",
                       response = "max_H")
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/all_plants_clean.csv",
                       response = "max_rgr")
     
     # Recovery
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "Bv",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "Bf",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "Br",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "Brh",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "B_above",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "B_below",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "B_total",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "A_B",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "uH",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "urgr",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "max_H",
                       recovery = T)
-    run_measure_model(comp, 
+    run_measure_model(comp,
                       infile = "data/recovery_plants_clean.csv",
                       response = "max_rgr",
                       recovery = T)
