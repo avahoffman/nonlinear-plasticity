@@ -7,7 +7,7 @@ run_mcmc <-
   function(comp,
            infile,
            response,
-           iter = 10000) {
+           iter = 100000) {
     # This function runs the MCMC sampler and makes a fit summary
     
     # Read in data
@@ -56,13 +56,18 @@ run_mcmc <-
 
 gather_posterior_data <-
   function(summ_fit,
-           response) {
+           response,
+           recovery = F) {
     ests <-
       # Collect mean, 25-75, CI, and Rhat
       (summ_fit[grep("b", rownames(summ_fit)), c(1, 5, 6, 4, 8, 10)])
     descr <- gsub("as.factor", "", colnames(dm))
     descr <- gsub("geno)3", "geno)5", descr)
-    ests <- cbind(rep(response, nrow(ests)), descr, ests)
+    if (!(recovery)){
+      ests <- cbind(rep(response, nrow(ests)), descr, ests)
+    } else {
+      ests <- cbind(rep(paste(response, "_recovery", sep = ""), nrow(ests)), descr, ests)
+    }
     
     # Calculate Pr
     Pr_calc <- data.frame()

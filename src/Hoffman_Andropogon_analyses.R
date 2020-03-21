@@ -29,28 +29,33 @@ df <- read.csv("biomass_plants.csv",header=T)
     dir.create(file.path(wd, 'Correlation_plots'), showWarnings = FALSE)
     setwd(file.path(wd, 'Correlation_plots'))
     df <- na.omit(df)
-    pdf(file="cor_biomass_plants.pdf",height=8,width=8)
-    plot(df[,8:ncol(df)]) ; dev.off() 
+    pdf(file="cor_biomass_plants.pdf",height=12,width=12)
+    plot(df[,8:ncol(df)],cex=0.5,pch=20) ; dev.off() 
     write.csv(cor(df[,8:ncol(df)]),file="cor_biomass_plants.csv"); setwd(wd)
 df <- read.csv("phys_plants.csv",header=T)
     setwd(file.path(wd, 'Correlation_plots'))
     df <- na.omit(df)
-    pdf(file="cor_phys_plants.pdf",height=30,width=30)
-    plot(df[,10:ncol(df)]) ; dev.off()
+    pdf(file="cor_phys_plants.pdf",height=5,width=5)
+    plot(df[,53:ncol(df)],cex=0.5,pch=20) ; dev.off()
     write.csv(cor(df[,10:ncol(df)]),file="cor_phys_plants.csv"); setwd(wd)
 df <- read.csv("all_plants.csv",header=T)
     setwd(file.path(wd, 'Correlation_plots'))
     df <- na.omit(df)
-    pdf(file="cor_growth_plants.pdf",height=15,width=15)
-    plot(df[,6:ncol(df)]) ; dev.off()
+    pdf(file="cor_growth_plants.pdf",height=12,width=12)
+    plot(df[,6:ncol(df)],cex=0.5,pch=20) ; dev.off()
     write.csv(cor(df[,6:ncol(df)]),file="cor_all_plants.csv"); setwd(wd)
 df <- read.csv("recovery_plants.csv",header=T)
     setwd(file.path(wd, 'Correlation_plots'))
     df <- na.omit(df)
-    pdf(file="cor_recovery_plants.pdf",height=8,width=8)
-    plot(df[,10:ncol(df)]) ; dev.off()
+    pdf(file="cor_recovery_plants.pdf",height=12,width=12)
+    plot(df[,10:ncol(df)],cex=0.5,pch=20) ; dev.off()
     write.csv(cor(df[,10:ncol(df)]),file="cor_recovery_plants.csv"); setwd(wd)
 setwd(wd)
+
+ggplot (df, aes(x=trt, y=log10(SLA), col=as.factor(geno)))+
+  geom_point() +
+  geom_smooth(method=loess)
+summary(lm(log10(SLA)~geno*trt, data=df))
     
 ###########################################################################################
 ## PRINCIPAL COMPONENTS WERE USED TO DETERMINE TRAITS OF INTEREST
@@ -77,7 +82,7 @@ getprcomps( df=read.csv(file = "all_plants.csv",header=T), limits = c(6:25) )
 getprcomps( df=read.csv(file = "recovery_plants.csv",header=T), limits = c(10:12,14,15,17:26) ) #excluding flowering params used in later models 
 
 
-  ###########################################################################################
+###########################################################################################
 ## MODEL FOR MORPHOLOGY, PHYSIOLOGICAL TRAITS OF INTEREST
 ###########################################################################################
 
@@ -866,10 +871,10 @@ getprcomps( df=read.csv(file = "recovery_plants.csv",header=T), limits = c(10:12
                      response="D14_1117") + theme(legend.position = "none", axis.title.x = element_blank())
   
   # ## CONSTRUCT FIGURE FROM INDIVIDUAL FIGURES ABOVE
-  grid=plot_grid( p_1,p_2,align = 'v', labels = c("(a)", "(b)"), label_size=15, hjust = -2, nrow = 2, rel_heights = c(1,1) )
+  grid=plot_grid( p_1,p_2,align = 'h', labels = c("(a)", "(b)"), label_size=15, hjust = -2, nrow = 1)
   grobs=ggplotGrob(p_1 + theme(legend.position="bottom",legend.box.just = "left"))$grobs
   legend=grobs[[which(sapply(grobs, function(x) x$name) == "guide-box")]]
-  pdf(file="FIGURE_4.pdf",height=7.2,width=3.5)
+  pdf(file="FIGURE_4_new.pdf",height=3.5,width=7.2)
   plot_grid(grid, legend, ncol = 1, rel_heights = c(1, .05)) ; dev.off() ; dev.off() ; dev.off()
   
 ###########################################################################################
@@ -1366,3 +1371,469 @@ pdfname="FIGURE_5.pdf"
     #facet_grid(.~facet, scales="free",space="free") +
     facet_grid(.~geno)
   dev.off()
+  
+###########################################################################################
+## PHYSIOLOGICAL TRAITS - MEANS ONLY (plots only)
+###########################################################################################
+  
+  
+  library(rstan)
+  library(LambertW)
+  options(mc.cores = parallel::detectCores())
+  ##MODEL
+  Stan.model <- "
+  data{
+  int<lower=0> N;
+  int<lower=0> J;
+  vector[N] y;
+  matrix[N,J] X;
+  }
+  parameters{
+  vector[J] b;
+  real<lower=0> sigma;
+  }
+  transformed parameters{
+  vector[N] mu;
+  mu=X*b;
+  }
+  model{
+  sigma ~ cauchy(0,5);
+  b ~ normal(0,1000000);
+  y ~ normal(mu, sigma);  //likelihood
+  }
+  generated quantities{
+  vector[N] e_y;
+  vector[15] Y;
+  Y[1] = b[1];
+  Y[2] = b[1] + b[2];
+  Y[3] = b[1] + b[3];
+  Y[4] = b[1] + b[4];
+  Y[5] = b[1] + b[5];
+  Y[6] = b[1] + b[6];
+  Y[7] = b[1] + b[2] + b[6] + b[8];
+  Y[8] = b[1] + b[3] + b[6] + b[9];
+  Y[9] = b[1] + b[4] + b[6] + b[10];
+  Y[10] = b[1] + b[5] + b[6] + b[11];
+  Y[11] = b[1] + b[7];
+  Y[12] = b[1] + b[2] + b[7] + b[12];
+  Y[13] = b[1] + b[3] + b[7] + b[13];
+  Y[14] = b[1] + b[4] + b[7] + b[14];
+  Y[15] = b[1] + b[5] + b[7] + b[15];
+  e_y = y - mu;
+  }
+  "
+  comp <- stan_model(model_code = Stan.model) ##COMPILE
+  ##LOAD DATA - CHANGE TO NAME FILES DIFFERENTLY IF DESIRED
+  trait.model <- function(infile="biomass_plants.csv",
+                          pdfname="rxn_norm_Bv.pdf",
+                          pdfname_normtest="normtest_Bv.pdf",
+                          response.label=expression(paste("Aboveground Biomass (g)")),
+                          response='Bv'){
+    setwd(wd)
+    df <- read.csv(infile,header=T) ; response.1 <- df[,c(response)]
+    df.filt <- df[!(response.1 = is.na(response.1)),] ; nrow(df.filt) ## ALLOWS N TO VARY
+    dm <- model.matrix(~as.factor(trt)*as.factor(geno), data=df.filt) ## MODEL MATRIX FOR STAN
+    response.var <- df.filt[,c(response)] ## NEW DEPENDENT VAR WITH NAs REMOVED
+    model.components <- list( 'N' = nrow(df.filt), 'y' = response.var, 'X' = dm, 'J' = ncol(dm) )
+    iter <- 10000
+    ##SAMPLE
+    fit <- sampling( comp, data = model.components, iter = iter, warmup = iter/2, thin = 1, chains = 3)
+    summ_fit <- summary(fit) ; summ_fit <- as.data.frame(summ_fit$summary)
+    ## OUTPUT DATA
+    dir.create(file.path(wd, 'Parameter_estimates'), showWarnings = FALSE)
+    setwd(file.path(wd, 'Parameter_estimates'))
+    ests <- (summ_fit[grep("b", rownames(summ_fit)), c(4,8) ])
+    write.csv(ests, file=paste(response,"_parameters_",infile,sep="") )
+    setwd(wd)
+    ##RUN NORMALITY TESTS
+    sdf <- summ_fit[grep("Y", rownames(summ_fit)), ]
+    rdf <- summ_fit[grep("e_y", rownames(summ_fit)), ]
+    dir.create(file.path(wd, 'Normality_tests'), showWarnings = FALSE)
+    setwd(file.path(wd, 'Normality_tests'))
+    pdf(file=pdfname_normtest,height=7,width=7) ##WRITES NORMALITY PLOTS TO DIR 'NORMALITY_TESTS'
+    test_norm(rdf$mean); dev.off()
+    ##PLOTTING REACTION NORMS
+    geno <- c(11,11,11,11,11,2,2,2,2,2,5,5,5,5,5)
+    trt <- c(10,15,20,25,35,10,15,20,25,35,10,15,20,25,35)
+    facet <- c(1,1,1,1,2,1,1,1,1,2,1,1,1,1,2) ## ALLOWS SEPERATION OF X AXIS FOR SAT'D TREATMENT
+    plot.params <- cbind(sdf,geno,trt,facet)
+    gg <- ggplot( plot.params, aes(x=trt,y=mean,color=as.factor(geno))) +
+      geom_errorbar(aes(ymin=`2.5%`, ymax=`97.5%`), width=1) +
+      xlab("% VWC") +
+      ylab(response.label) +
+      geom_line() +
+      geom_point(size=1) +
+      theme_classic() +
+      theme(legend.position="bottom") +
+      scale_color_viridis(discrete=T, end=0.9, name="Genotype") +
+      scale_x_continuous(breaks=c(10,15,20,25,35), labels=c("10","15","20","25","Sat'd")) +
+      facet_grid(.~facet, scales="free",space="free") +
+      theme(strip.text = element_blank()) +
+      theme(axis.title.y = element_text(margin = margin(t = 0, r = -7, b = 0, l = 0)))
+    dir.create(file.path(wd, 'Reaction_Norms'), showWarnings = FALSE)
+    setwd(file.path(wd, 'Reaction_Norms'))
+    ggsave(filename=pdfname,plot=gg,height=4,width=4)
+    setwd(wd)
+    print(summ_fit[grep("geno", rownames(summ_fit)), ])
+    return(gg)
+  }
+  
+p_1 <- trait.model(infile="phys_plants.csv",
+                     pdfname="rxn_norm_uAnet.pdf",
+                     pdfname_normtest="normtest_uAnet.pdf",
+                     response.label=expression(paste("mean ",A[net])),
+                     response="uAnet") + theme(legend.position = "none", axis.title.x = element_blank())
+p_2 <- trait.model(infile="phys_plants.csv",
+                   pdfname="rxn_norm_ugs.pdf",
+                   pdfname_normtest="normtest_ugs.pdf",
+                   response.label=expression(paste("mean ",g[s])),
+                   response="ugs") + theme(legend.position = "none", axis.title.x = element_blank())
+# p_3 <- trait.model(infile="phys_plants.csv",
+#                    pdfname="rxn_norm_ufv.pdf",
+#                    pdfname_normtest="normtest_ufv.pdf",
+#                    response.label=expression(paste("mean fv/fm")),
+#                    response="ufv") + theme(legend.position = "none", axis.title.x = element_blank())
+p_4 <- trait.model(infile="phys_plants.csv",
+                   pdfname="rxn_norm_uE.pdf",
+                   pdfname_normtest="normtest_uE.pdf",
+                   response.label=expression(paste("mean evap. rate")),
+                   response="uE") + theme(legend.position = "none", axis.title.x = element_blank())
+# p_5 <- trait.model(infile="phys_plants.csv",
+#                    pdfname="rxn_norm_uWUEi.pdf",
+#                    pdfname_normtest="normtest_uWUEi.pdf",
+#                    response.label=expression(paste("mean ",WUE[i])),
+#                    response="uWUEi") + theme(legend.position = "none", axis.title.x = element_blank())
+
+
+leg_plot <- p_1 + theme(legend.position="bottom",legend.box.just = "left")
+legend <- get_legend(leg_plot)
+
+grid=plot_grid( p_1 + theme(axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 0))),
+                p_2 + theme(axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 0))),
+               #p_3 + theme(axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 0))),
+                p_4 + theme(axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 0))),
+                #p_5 + theme(axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 0))),
+                align = 'vh', labels = c("(a)", "(b)", "(c)"), label_size=15, hjust = -2.5, nrow = 1)
+pdf(file="FIGURE_1_revised.pdf",height=3.5,width=10.5)
+plot_grid(grid, legend, ncol = 1, rel_heights = c(1, .1))  ; dev.off()
+
+
+###########################################################################################
+## MODEL FOR MAX HEIGHT OVER TIME (GROWTH RATE) - plots only!!
+###########################################################################################
+
+library(rstan)
+library(LambertW)
+options(mc.cores = parallel::detectCores())
+##MODEL
+Stan.model <- "
+data{
+int<lower=0> N;
+int<lower=0> J;
+vector[N] y;
+matrix[N,J] X;
+}
+parameters{
+vector[J] b;
+real<lower=0> sigma;
+}
+transformed parameters{
+vector[N] mu;
+mu=X*b;
+}
+model{
+sigma ~ cauchy(0,5);
+b ~ normal(0,1000000);
+y ~ normal(mu, sigma);  //likelihood
+}
+generated quantities{
+vector[N] e_y;
+vector[15] Y;
+Y[1] = b[1];
+Y[2] = b[1] + b[2];
+Y[3] = b[1] + b[3];
+Y[4] = b[1] + b[4];
+Y[5] = b[1] + b[5];
+Y[6] = b[1] + b[6];
+Y[7] = b[1] + b[2] + b[6] + b[8];
+Y[8] = b[1] + b[3] + b[6] + b[9];
+Y[9] = b[1] + b[4] + b[6] + b[10];
+Y[10] = b[1] + b[5] + b[6] + b[11];
+Y[11] = b[1] + b[7];
+Y[12] = b[1] + b[2] + b[7] + b[12];
+Y[13] = b[1] + b[3] + b[7] + b[13];
+Y[14] = b[1] + b[4] + b[7] + b[14];
+Y[15] = b[1] + b[5] + b[7] + b[15];
+e_y = y - mu;
+}
+"
+pdfname="FIGURE_3_new.pdf"
+comp <- stan_model(model_code = Stan.model)
+setwd(wd)
+df <- read.csv("all_plants.csv",header=T)
+dm <- model.matrix(~as.factor(trt)*as.factor(geno), data=df)     ## MODEL MATRIX FOR STAN
+height.model <- function(response.var=df$H2_0821,pdfname_normtest="normtest_H2.pdf",date_ID="2",response="H2_0821"){
+  model.components <- list( 'N' = nrow(df), 'y' = response.var, 'X' = dm, 'J' = ncol(dm) )
+  iter <- 10000
+  ##SAMPLE
+  fit <- sampling( comp, data = model.components, iter = iter, warmup = iter/2, thin = 1, chains = 3, control=list(adapt_delta=0.99) )
+  summ_fit <- summary(fit) ; summ_fit <- as.data.frame(summ_fit$summary)
+  ## OUTPUT DATA
+  dir.create(file.path(wd, 'Parameter_estimates'), showWarnings = FALSE)
+  setwd(file.path(wd, 'Parameter_estimates'))
+  ests <- (summ_fit[grep("b", rownames(summ_fit)), c(4,8) ])
+  write.csv(ests, file=paste(response,"_parameters_all_plants.csv",sep="") )
+  setwd(wd)
+  sdf <- summ_fit[grep("Y", rownames(summ_fit)), ]
+  rdf <- summ_fit[grep("e_y", rownames(summ_fit)), ]
+  dir.create(file.path(wd, 'Normality_tests'), showWarnings = FALSE)
+  setwd(file.path(wd, 'Normality_tests'))
+  pdf(file=pdfname_normtest,height=7,width=7); test_norm(rdf$mean); dev.off() ; setwd(wd) ##PLOT NORMALITY TESTS
+  geno <- c(11,11,11,11,11,2,2,2,2,2,5,5,5,5,5)
+  trt <- c(10,15,20,25,35,10,15,20,25,35,10,15,20,25,35)
+  facet <- c(1,1,1,1,2,1,1,1,1,2,1,1,1,1,2) ## SATURATED TREATMENT ON SEPERATED X AXIS
+  date <- c(rep(date_ID,15))
+  sdf <- cbind(sdf,geno,trt,facet,date)
+  return(sdf)
+}
+##RUN MODELS, PLOT COMES LATER
+df1 <- height.model()
+df2 <- height.model(df$H4_0904,"normtest_H4.pdf","4",response="H4_0904")
+df3 <- height.model(df$H6_0918,"normtest_H6.pdf","6",response="H6_0918")
+df4 <- height.model(df$H7_0926,"normtest_H7.pdf","7",response="H7_0926")
+df5 <- height.model(df$H8_1002,"normtest_H8.pdf","8",response="H8_1002")
+df6 <- height.model(df$H9_1009,"normtest_H9.pdf","9",response="H9_1009")
+df7 <- height.model(df$H10_1015,"normtest_H10.pdf","10",response="H10_1015")
+
+height.model2 <- function(response.var=df$D4_0904,pdfname_normtest="normtest_D4.pdf",date_ID="week4",response="D4_0904"){
+  model.components <- list( 'N' = nrow(df), 'y' = response.var, 'X' = dm, 'J' = ncol(dm) )
+  iter <- 10000
+  ##SAMPLE
+  fit <- sampling( comp, data = model.components, iter = iter, warmup = iter/2, thin = 1, chains = 3, control=list(adapt_delta=0.99) )
+  summ_fit <- summary(fit) ; summ_fit <- as.data.frame(summ_fit$summary)
+  ## OUTPUT DATA
+  dir.create(file.path(wd, 'Parameter_estimates'), showWarnings = FALSE)
+  setwd(file.path(wd, 'Parameter_estimates'))
+  ests <- (summ_fit[grep("b", rownames(summ_fit)), c(4,8) ])
+  write.csv(ests, file=paste(response,"_parameters_all_plants.csv",sep="") )
+  setwd(wd)
+  sdf <- summ_fit[grep("Y", rownames(summ_fit)), ]
+  rdf <- summ_fit[grep("e_y", rownames(summ_fit)), ]
+  dir.create(file.path(wd, 'Normality_tests'), showWarnings = FALSE)
+  setwd(file.path(wd, 'Normality_tests'))
+  pdf(file=pdfname_normtest,height=7,width=7); test_norm(rdf$mean); dev.off() ; setwd(wd) ##PLOT NORMALITY TESTS
+  geno <- c(11,11,11,11,11,2,2,2,2,2,5,5,5,5,5)
+  trt <- c(10,15,20,25,35,10,15,20,25,35,10,15,20,25,35)
+  facet <- c(1,1,1,1,2,1,1,1,1,2,1,1,1,1,2) ## SATURATED TREATMENT ON SEPERATED X AXIS
+  date <- c(rep(date_ID,15))
+  sdf <- cbind(sdf,geno,trt,facet,date)
+  return(sdf)
+}
+
+df9 <- height.model2(df$D4_0904,"normtest_D4.pdf","4",response="D4_0904")
+df10 <- height.model2(df$D6_0918,"normtest_D6.pdf","6",response="D6_0918")
+df11 <- height.model2(df$D7_0926,"normtest_D7.pdf","7",response="D7_0926")
+df12 <- height.model2(df$D8_1002,"normtest_D8.pdf","8",response="D8_1002")
+df13 <- height.model2(df$D9_1009,"normtest_D9.pdf","9",response="D9_1009")
+df14 <- height.model2(df$D10_1015,"normtest_D10.pdf","10",response="D10_1015")
+
+height.data <- rbind(df1,df2,df3,df4,df5,df6,df7)
+height.data <- height.data[,c(1,4,8,11,12,13,14)]
+response.label <- expression(paste("Max. height (cm)"))
+mean.dat <- aggregate(mean ~ trt*geno*facet, data = height.data, max)
+dat.2.5 <- aggregate(`2.5%` ~ trt*geno*facet, data = height.data, max)
+dat.97.5 <- aggregate(`97.5%` ~ trt*geno*facet, data = height.data, max)
+height.dat <- merge(mean.dat,dat.2.5) ; height.dat <- merge(height.dat,dat.97.5)
+ 
+##PLOT HEIGHT OVER TIME
+htplot <- ggplot( height.dat, aes(x=trt,y=mean,color=as.factor(geno))) +
+  geom_errorbar(aes(ymin=`2.5%`, ymax=`97.5%`), width=1) +
+  xlab("% VWC") +
+  ylab(response.label) +
+  geom_line() +
+  geom_point(size=1) +
+  theme_classic() +
+  theme(legend.position="bottom") +
+  scale_color_viridis(discrete=T, end=0.9, name="Genotype") +
+  scale_x_continuous(breaks=c(10,15,20,25,35), labels=c("10","15","20","25","Sat'd")) +
+  facet_grid(.~facet, scales="free",space="free") +
+  theme(strip.text = element_blank()) +
+  theme(axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 0)))
+
+
+delta.data <- rbind(df9,df10,df11,df12,df13,df14)
+delta.data <- delta.data[,c(1,4,8,11,12,13,14)]
+response.label <- expression(paste("Max. relative growth rate (ln(cm)"~week^{-1}~")"))
+mean.dat <- aggregate(mean ~ trt*geno*facet, data = delta.data , max)
+dat.2.5 <- aggregate(`2.5%` ~ trt*geno*facet, data = delta.data , max)
+dat.97.5 <- aggregate(`97.5%` ~ trt*geno*facet, data = delta.data , max)
+delta.dat <- merge(mean.dat,dat.2.5) ; delta.dat <- merge(delta.dat,dat.97.5)
+
+##growth rate
+rgrplot <- ggplot( delta.dat, aes(x=trt,y=mean,color=as.factor(geno))) +
+  geom_errorbar(aes(ymin=`2.5%`, ymax=`97.5%`), width=1) +
+  xlab("% VWC") +
+  ylab(response.label) +
+  geom_line() +
+  geom_point(size=1) +
+  theme_classic() +
+  theme(legend.position="bottom") +
+  scale_color_viridis(discrete=T, end=0.9, name="Genotype") +
+  scale_x_continuous(breaks=c(10,15,20,25,35), labels=c("10","15","20","25","Sat'd")) +
+  facet_grid(.~facet, scales="free",space="free") +
+  theme(strip.text = element_blank()) +
+  theme(axis.title.y = element_text(margin = margin(t = 0, r = 1, b = 0, l = 0)))
+
+
+grid=plot_grid( htplot + theme(legend.position="none"),
+                rgrplot + theme(legend.position="none"), 
+                align = 'h', labels = c("(a)", " (b)"), label_size=15, hjust = -2, vjust = 2, nrow = 1)
+grobs=ggplotGrob(htplot + theme(legend.position="bottom",legend.box.just = "left"))$grobs
+legend=grobs[[which(sapply(grobs, function(x) x$name) == "guide-box")]]
+pdf(file=pdfname,height=3.5,width=7.2)
+plot_grid(grid, legend, ncol = 1, rel_heights = c(1, .05)) ; dev.off()
+
+###########################################################################################
+## MODEL FOR HEIGHT RECOVERY plots only!!
+###########################################################################################
+
+setwd(wd)
+library(rstan)
+library(LambertW)
+options(mc.cores = parallel::detectCores())
+##MODEL
+Stan.model <- "
+data{
+int<lower=0> N;
+int<lower=0> J;
+vector[N] y;
+matrix[N,J] X;
+}
+parameters{
+vector[J] b;
+real<lower=0> sigma;
+}
+transformed parameters{
+vector[N] mu;
+mu=X*b;
+}
+model{
+sigma ~ cauchy(0,5);
+b ~ normal(0,1000000);
+y ~ normal(mu, sigma);  //likelihood
+}
+generated quantities{
+vector[N] e_y;
+vector[15] Y;
+Y[1] = b[1];
+Y[2] = b[1] + b[2];
+Y[3] = b[1] + b[3];
+Y[4] = b[1] + b[4];
+Y[5] = b[1] + b[5];
+Y[6] = b[1] + b[6];
+Y[7] = b[1] + b[2] + b[6] + b[8];
+Y[8] = b[1] + b[3] + b[6] + b[9];
+Y[9] = b[1] + b[4] + b[6] + b[10];
+Y[10] = b[1] + b[5] + b[6] + b[11];
+Y[11] = b[1] + b[7];
+Y[12] = b[1] + b[2] + b[7] + b[12];
+Y[13] = b[1] + b[3] + b[7] + b[13];
+Y[14] = b[1] + b[4] + b[7] + b[14];
+Y[15] = b[1] + b[5] + b[7] + b[15];
+e_y = y - mu;
+}
+"
+
+pdfname="FIGURE_5_new.pdf"
+comp <- stan_model(model_code = Stan.model)
+df <- read.csv("recovery_plants.csv",header=T)
+dm <- model.matrix(~as.factor(trt)*as.factor(geno), data=df)     ## MODEL MATRIX FOR STAN
+height.model <- function(response.var=df$H11_1023,pdfname_normtest="normtest_H11.pdf",date_ID="11", response="H11_1023"){
+  model.components <- list( 'N' = nrow(df), 'y' = response.var, 'X' = dm, 'J' = ncol(dm) )
+  iter <- 10000
+  ##SAMPLE
+  fit <- sampling( comp, data = model.components, iter = iter, warmup = iter/2, thin = 1, chains = 3, control=list(adapt_delta=0.99) )
+  summ_fit <- summary(fit) ; summ_fit <- as.data.frame(summ_fit$summary)
+  ## OUTPUT DATA
+  dir.create(file.path(wd, 'Parameter_estimates'), showWarnings = FALSE)
+  setwd(file.path(wd, 'Parameter_estimates'))
+  ests <- (summ_fit[grep("b", rownames(summ_fit)), c(4,8) ])
+  write.csv(ests, file=paste(response,"_parameters_recovery_plants.csv",sep="") )
+  setwd(wd)
+  sdf <- summ_fit[grep("Y", rownames(summ_fit)), ]
+  rdf <- summ_fit[grep("e_y", rownames(summ_fit)), ]
+  dir.create(file.path(wd, 'Normality_tests'), showWarnings = FALSE)
+  setwd(file.path(wd, 'Normality_tests'))
+  pdf(file=pdfname_normtest,height=7,width=7); test_norm(rdf$mean); dev.off() ; setwd(wd) ##PLOT NORMALITY TESTS
+  geno <- c(11,11,11,11,11,2,2,2,2,2,5,5,5,5,5)
+  trt <- c(10,15,20,25,35,10,15,20,25,35,10,15,20,25,35)
+  facet <- c(1,1,1,1,2,1,1,1,1,2,1,1,1,1,2) ## SATURATED TREATMENT ON SEPERATED X AXIS
+  date <- c(rep(date_ID,15))
+  sdf <- cbind(sdf,geno,trt,facet,date)
+  return(sdf)
+}
+##RUN MODELS, PLOT COMES LATER
+df1 <- height.model()
+df2 <- height.model(df$H12_1104,"normtest_H12.pdf","12",response="H12_1104")
+df3 <- height.model(df$H13_1111,"normtest_H13.pdf","13",response="H13_1111")
+df4 <- height.model(df$H14_1117,"normtest_H14.pdf","14",response="H14_1117")
+df5 <- height.model(df$H15_1124,"normtest_H15.pdf","15",response="H15_1124")
+df6 <- height.model(df$D11_1023,"normtest_D11.pdf","11",response="D11_1023")
+df7 <- height.model(df$D12_1104,"normtest_D12.pdf","12",response="D12_1104")
+df8 <- height.model(df$D13_1111,"normtest_D13.pdf","13",response="D13_1111")
+df9 <- height.model(df$D14_1117,"normtest_D14.pdf","14",response="D14_1117")
+df10 <- height.model(df$D15_1124,"normtest_D15.pdf","15",response="D15_1124")
+
+height.data.recov <- rbind(df1,df2,df3,df4,df5)
+height.data.recov <- height.data.recov[,c(1,4,8,11,12,13,14)]
+response.label <- expression(paste("Max. height (cm)"))
+mean.dat <- aggregate(mean ~ trt*geno*facet, data = height.data.recov, max)
+dat.2.5 <- aggregate(`2.5%` ~ trt*geno*facet, data = height.data.recov, max)
+dat.97.5 <- aggregate(`97.5%` ~ trt*geno*facet, data = height.data.recov, max)
+height.dat <- merge(mean.dat,dat.2.5) ; height.dat <- merge(height.dat,dat.97.5)
+##PLOT HEIGHT OVER TIME
+recovp1 <- ggplot( height.dat, aes(x=trt,y=mean,color=as.factor(geno))) +
+  geom_errorbar(aes(ymin=`2.5%`, ymax=`97.5%`), width=1) +
+  xlab("% VWC") +
+  ylab(response.label) +
+  geom_line() +
+  geom_point(size=1) +
+  theme_classic() +
+  theme(legend.position="bottom") +
+  scale_color_viridis(discrete=T, end=0.9, name="Genotype") +
+  scale_x_continuous(breaks=c(10,15,20,25,35), labels=c("10","15","20","25","Sat'd")) +
+  facet_grid(.~facet, scales="free",space="free") +
+  theme(strip.text = element_blank()) +
+  theme(axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 0)))
+
+delta.data.recov <- rbind(df6,df7,df8,df9,df10)
+delta.data.recov <- delta.data.recov[,c(1,4,8,11,12,13,14)]
+response.label <- expression(paste("Max. relative growth rate (ln(cm)"~week^{-1}~")"))
+mean.dat <- aggregate(mean ~ trt*geno*facet, data = delta.data.recov , max)
+dat.2.5 <- aggregate(`2.5%` ~ trt*geno*facet, data = delta.data.recov , max)
+dat.97.5 <- aggregate(`97.5%` ~ trt*geno*facet, data = delta.data.recov , max)
+delta.dat <- merge(mean.dat,dat.2.5) ; delta.dat <- merge(delta.dat,dat.97.5)
+# growth rate
+recovp2 <- ggplot( delta.dat, aes(x=trt,y=mean,color=as.factor(geno))) +
+  geom_errorbar(aes(ymin=`2.5%`, ymax=`97.5%`), width=1) +
+  xlab("% VWC") +
+  ylab(response.label) +
+  geom_line() +
+  geom_point(size=1) +
+  theme_classic() +
+  theme(legend.position="bottom") +
+  scale_color_viridis(discrete=T, end=0.9, name="Genotype") +
+  scale_x_continuous(breaks=c(10,15,20,25,35), labels=c("10","15","20","25","Sat'd")) +
+  facet_grid(.~facet, scales="free",space="free") +
+  theme(strip.text = element_blank()) +
+  theme(axis.title.y = element_text(margin = margin(t = 0, r = 1, b = 0, l = 0)))
+
+grid=plot_grid( recovp1 + theme(legend.position="none"),
+                recovp2 + theme(legend.position="none"), 
+                align = 'h', labels = c("(a)", "(b)"), label_size=15, hjust = -4, vjust = 2, nrow = 1)
+grobs=ggplotGrob(htplot + theme(legend.position="bottom",legend.box.just = "left"))$grobs
+legend=grobs[[which(sapply(grobs, function(x) x$name) == "guide-box")]]
+pdf(file=pdfname,height=3.5,width=7.2)
+plot_grid(grid, legend, ncol = 1, rel_heights = c(1, .05)) ; dev.off()
+
+

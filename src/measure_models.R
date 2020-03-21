@@ -51,8 +51,9 @@ Stan_model <- "
 
 run_measure_model <-
   function(comp,
-           infile = "data/biomass_plants.csv",
-           response) {
+           infile = "data/biomass_plants_clean.csv",
+           response,
+           recovery = F) {
     # This function...
     
     # Summarize model
@@ -67,7 +68,9 @@ run_measure_model <-
     } else {
       write_col = F
     }
-    write.table(gather_posterior_data(summ_fit = summ, response = response),
+    write.table(gather_posterior_data(summ_fit = summ, 
+                                      response = response, 
+                                      recovery = recovery),
               file = "output/posterior_output.csv",
               sep = ",",
               col.names = write_col,
@@ -87,24 +90,114 @@ do_measure_mcmc_sampling <-
     
     # Morphology
     run_measure_model(comp, response = "Bv")
+    run_measure_model(comp, response = "Br")
+    run_measure_model(comp, response = "DMCv")
+    run_measure_model(comp, response = "DMCr")
+    run_measure_model(comp, response = "A_B")
+    run_measure_model(comp, response = "SLA")
+    run_measure_model(comp, response = "LA")
     run_measure_model(comp, response = "Rl")
     run_measure_model(comp, response = "Rsa")
-    run_measure_model(comp, response = "Rt")
+    run_measure_model(comp, response = "Rd")
     run_measure_model(comp, response = "Rv")
-    run_measure_model(comp, response = "LA")
+    run_measure_model(comp, response = "Rt")
     run_measure_model(comp, response = "Rsa_la")
     run_measure_model(comp, response = "srl")
+    run_measure_model(comp, response = "ssa")
     
     # Physiology
     run_measure_model(comp, 
-                      infile = "data/phys_plants.csv",
+                      infile = "data/phys_plants_clean.csv",
                       response = "uAnet")
     run_measure_model(comp,
-                      infile = "data/phys_plants.csv",
+                      infile = "data/phys_plants_clean.csv",
                       response = "ugs")
     run_measure_model(comp,
-                      infile = "data/phys_plants.csv",
+                      infile = "data/phys_plants_clean.csv",
+                      response = "ufv")
+    run_measure_model(comp,
+                      infile = "data/phys_plants_clean.csv",
                       response = "uE")
+    run_measure_model(comp,
+                      infile = "data/phys_plants_clean.csv",
+                      response = "uWUEi")
+    run_measure_model(comp, 
+                      infile = "data/phys_plants_clean.csv",
+                      response = "max_Anet")
+    run_measure_model(comp,
+                      infile = "data/phys_plants_clean.csv",
+                      response = "max_gs")
+    run_measure_model(comp,
+                      infile = "data/phys_plants_clean.csv",
+                      response = "max_fv")
+    run_measure_model(comp,
+                      infile = "data/phys_plants_clean.csv",
+                      response = "max_E")
+    run_measure_model(comp,
+                      infile = "data/phys_plants_clean.csv",
+                      response = "max_WUEi")
     
-    # 
+    # All plants
+    run_measure_model(comp, 
+                      infile = "data/all_plants_clean.csv",
+                      response = "uH")
+    run_measure_model(comp, 
+                      infile = "data/all_plants_clean.csv",
+                      response = "urgr")
+    run_measure_model(comp, 
+                      infile = "data/all_plants_clean.csv",
+                      response = "max_H")
+    run_measure_model(comp, 
+                      infile = "data/all_plants_clean.csv",
+                      response = "max_rgr")
+    
+    # Recovery
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "Bv",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "Bf",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "Br",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "Brh",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "B_above",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "B_below",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "B_total",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "A_B",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "uH",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "urgr",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "max_H",
+                      recovery = T)
+    run_measure_model(comp, 
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "max_rgr",
+                      recovery = T)
   }
