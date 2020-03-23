@@ -18,6 +18,8 @@ source("src/data_clean.R")
 source("src/corr_analysis.R")
 source("src/pca.R")
 source("src/measure_models.R")
+source("src/theta_model.R")
+source("src/measure_plot.R")
 
 ###########################################################################################
 
@@ -38,4 +40,14 @@ run_corr_tests()
 produce_prcomps()
 
 # Modeling ----
-do_measure_mcmc_sampling()
+do_measure_mcmc_sampling() # Measures
+do_flwr_rh_mcmc_sampling() # Thetas
+
+# Plot main effects ----
+make_effect_plot(param_ = "geno_effect",
+                 outfile = "figures/genotype_effect.pdf")
+make_effect_plot(param_ = "trt_effect",
+                 outfile = "figures/treatment_effect.pdf")
+make_effect_plot(param_ = "int_effect",
+                 outfile = "figures/interaction_effect.pdf")
+  

@@ -38,7 +38,7 @@ run_mcmc <-
       )
     
     ##SAMPLE
-    fit <-
+    fit <- 
       sampling(
         comp,
         data = model.components,
@@ -58,16 +58,18 @@ gather_posterior_data <-
   function(summ_fit,
            response,
            recovery = F) {
-    ests <- rbind(
+    ests <- as.data.frame(rbind(
       # Collect mean, 25-75, CI, and Rhat
-      (summ_fit[grep("b", rownames(summ_fit)), c(1, 5, 7, 4, 8, 10)]),
-      (summ_fit[grep("G", rownames(summ_fit)), c(1, 5, 7, 4, 8, 10)]),
-      (summ_fit[grep("T", rownames(summ_fit)), c(1, 5, 7, 4, 8, 10)])
-    )
+      (summ_fit[grep("b", rownames(summ_fit)), c(1, 3, 5, 7, 4, 8, 10)]),
+      (summ_fit[grep("G", rownames(summ_fit)), c(1, 3, 5, 7, 4, 8, 10)]),
+      (summ_fit[grep("T", rownames(summ_fit)), c(1, 3, 5, 7, 4, 8, 10)]),
+      (summ_fit[grep("I", rownames(summ_fit)), c(1, 3, 5, 7, 4, 8, 10)])
+    ))
+    ests <- ests[!(grepl("beta", rownames(ests))), ] # Drop model param "beta"
     descr <- gsub("as.factor", "", colnames(dm))
-    descr <- c(gsub("geno)3", "geno)5", descr), rep("no_descr", 10))
+    descr <- c(gsub("geno)3", "geno)5", descr), rep("no_descr", 11))
     
-    param <- c(rep("beta", 15), rep("geno_avg",3), "geno_effect", rep("trt_avg", 5), "trt_effect")
+    param <- c(rep("beta", 15), rep("geno_avg",3), "geno_effect", rep("trt_avg", 5), "trt_effect", "int_effect")
     
     ests <- cbind(param, ests)
     
@@ -79,7 +81,7 @@ gather_posterior_data <-
     
     # Calculate Pr
     Pr_calc <- data.frame()
-    Pr_vals <-  as.data.frame(ests[, 7:8])
+    Pr_vals <-  as.data.frame(ests[, 8:9])
     for (r in 1:nrow(Pr_vals)) {
       max_ <- max(Pr_vals[r,])
       min_ <- min(Pr_vals[r,])
@@ -98,7 +100,7 @@ gather_posterior_data <-
       Pr_calc[r, 1] <- round(pr., 2)
     }
     ests <- cbind(ests, Pr_calc)
-    colnames(ests)[10] <- "Pr"
+    colnames(ests)[11] <- "Pr"
     colnames(ests)[1] <- "measure"
     
     return(ests)
@@ -125,24 +127,22 @@ make_normality_plots <-
   }
 
 
-run_flwr_mcmc <- 
-  function(comp){
+run_flwr_rh_mcmc <- 
+  function(comp,
+           response,
+           iter = 10000){
     # This function
     
     # Read in data
     df <-
       read.csv("data/recovery_plants_clean.csv", header = T)
-    response <- "Bf"
+    response <- response
     
     # Filter out NA response variable
     response.1 <-
       df[, c(response)]
     df.filt <-
       df[!(response.1 = is.na(response.1)),]
-    
-    # Make design matrix
-    dm <-
-      model.matrix(~ as.factor(trt) * as.factor(geno), data = df.filt) # Model Matrix
     
     # New dependent variable with NA removed
     response.var <-
@@ -151,10 +151,7 @@ run_flwr_mcmc <-
     # Declare model components
     model.components <- list(
       'N' = nrow(df.filt),
-      'y' = response.var,
-      'X' = dm,
-      'J' = ncol(dm),
-      'w' = df.filt$did_flwr, # Binary, whether plant flowered or not
+      'w' = response.var,
       'geno' = df.filt$geno,
       'G' = 3
     )
@@ -173,4 +170,42 @@ run_flwr_mcmc <-
       summary(fit)
     
     return(as.data.frame(summ_fit$summary))
+  }
+
+
+gather_flwr_rh_posterior_data <-
+  function(summ_fit,
+           response) {
+    ests <- as.data.frame(
+      # Collect mean, 25-75, CI, and Rhat
+      (summ_fit[grep("theta", rownames(summ_fit)), c(1, 3, 5, 7, 4, 8, 10)])
+    )
+    descr <- c("geno 11", "geno 2", "geno 5")
+      ests <- cbind(rep(response, nrow(ests)), descr, ests)
+    
+    # Calculate Pr
+    Pr_calc <- data.frame()
+    Pr_vals <-  as.data.frame(ests[, 8:9])
+    for (r in 1:nrow(Pr_vals)) {
+      max_ <- max(Pr_vals[r,])
+      min_ <- min(Pr_vals[r,])
+      # Calculate the proportion of overlap on zero
+      if (max_ < 0 & min_ < 0) {
+        pr. <- 1
+      } else if (max_ > 0 & min_ > 0) {
+        pr. <- 1
+      } else if (abs(max_) > abs(min_)) {
+        pr. <- abs(max_) / (abs(min_) + abs(max_))
+      } else if (abs(max_) < abs(min_)) {
+        pr. <- abs(min_) / (abs(min_) + abs(max_))
+      } else {
+        pr. <- "NA"
+      }
+      Pr_calc[r, 1] <- round(pr., 2)
     }
+    ests <- cbind(ests, Pr_calc)
+    colnames(ests)[11] <- "Pr"
+    colnames(ests)[1] <- "measure"
+    
+    return(ests)
+  }
