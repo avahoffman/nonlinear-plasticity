@@ -102,7 +102,7 @@ make_timeline <-
         labels = c(
           "Acclimation (misters)",
           "Acclimation (pots)",
-          "Drought treatment",
+          "Water availability treatments",
           "Recovery"
         ),
         name = "Experimental phase"
