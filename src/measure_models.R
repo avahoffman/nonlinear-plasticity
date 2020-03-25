@@ -196,21 +196,21 @@ do_measure_mcmc_sampling <-
     
     # Morphology
     # All of these values are positive
-    run_measure_model(comp_gamma, response = "Bv")
-    run_measure_model(comp_gamma, response = "Br")
-    run_measure_model(comp_gamma, response = "DMCv")
-    run_measure_model(comp_gamma, response = "DMCr")
-    run_measure_model(comp_gamma, response = "A_B")
-    run_measure_model(comp_gamma, response = "SLA")
-    run_measure_model(comp_gamma, response = "LA")
-    run_measure_model(comp_gamma, response = "Rl")
-    run_measure_model(comp_gamma, response = "Rsa")
-    run_measure_model(comp_gamma, response = "Rd")
-    run_measure_model(comp_gamma, response = "Rv")
-    run_measure_model(comp_gamma, response = "Rt")
-    run_measure_model(comp_gamma, response = "Rsa_la")
-    run_measure_model(comp_gamma, response = "srl")
-    run_measure_model(comp_gamma, response = "ssa")
+    # run_measure_model(comp_gamma, response = "Bv")
+    # run_measure_model(comp_gamma, response = "Br")
+    # run_measure_model(comp_gamma, response = "DMCv")
+    # run_measure_model(comp_gamma, response = "DMCr")
+    # run_measure_model(comp_gamma, response = "A_B")
+    # run_measure_model(comp_gamma, response = "SLA")
+    # run_measure_model(comp_gamma, response = "LA")
+    # run_measure_model(comp_gamma, response = "Rl")
+    # run_measure_model(comp_gamma, response = "Rsa")
+    # run_measure_model(comp_gamma, response = "Rd")
+    # run_measure_model(comp_gamma, response = "Rv")
+    # run_measure_model(comp_gamma, response = "Rt")
+    # run_measure_model(comp_gamma, response = "Rsa_la")
+    # run_measure_model(comp_gamma, response = "srl")
+    # run_measure_model(comp_gamma, response = "ssa")
     
     # Physiology
     # All of these values are positive
@@ -225,9 +225,6 @@ do_measure_mcmc_sampling <-
                       response = "ufv")
     run_measure_model(comp_gamma,
                       infile = "data/phys_plants_clean.csv",
-                      response = "uE")
-    run_measure_model(comp_gamma,
-                      infile = "data/phys_plants_clean.csv",
                       response = "uWUEi")
     run_measure_model(comp_gamma,
                       infile = "data/phys_plants_clean.csv",
@@ -238,9 +235,6 @@ do_measure_mcmc_sampling <-
     run_measure_model(comp_gamma,
                       infile = "data/phys_plants_clean.csv",
                       response = "max_fv")
-    run_measure_model(comp_gamma,
-                      infile = "data/phys_plants_clean.csv",
-                      response = "max_E")
     run_measure_model(comp_gamma,
                       infile = "data/phys_plants_clean.csv",
                       response = "max_WUEi")

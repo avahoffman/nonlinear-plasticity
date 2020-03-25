@@ -14,6 +14,7 @@ source("src/utils.R")
 
 # Specific functions
 source("src/theoretical_fig.R")
+source("src/timeline.R")
 source("src/data_clean.R")
 source("src/corr_analysis.R")
 source("src/pca.R")
@@ -25,6 +26,9 @@ source("src/measure_plot.R")
 
 # Make the theoretical figure
 make_theor_fig(outfile = "figures/theoretical_fig.pdf")
+
+# Make experimental timeline
+make_timeline()
 
 # Clean data
 clean_biomass_data()

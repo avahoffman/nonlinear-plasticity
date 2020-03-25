@@ -99,18 +99,6 @@ clean_phys_data <-
           ),
           na.rm = T
         )
-      df$uE[i] <-
-        mean(
-          c(
-            df$E5_0907[i],
-            df$E6_0913[i],
-            df$E7_0920[i],
-            df$E8_0925[i],
-            df$E9_1004[i],
-            df$E10_1011[i]
-          ),
-          na.rm = T
-        )
       df$uWUEi[i] <-
         mean(
           c(
@@ -158,18 +146,6 @@ clean_phys_data <-
             df$fv8_0925[i],
             df$fv9_1004[i],
             df$fv10_1011[i]
-          ),
-          na.rm = T
-        )
-      df$max_E[i] <-
-        max(
-          c(
-            df$E5_0907[i],
-            df$E6_0913[i],
-            df$E7_0920[i],
-            df$E8_0925[i],
-            df$E9_1004[i],
-            df$E10_1011[i]
           ),
           na.rm = T
         )
