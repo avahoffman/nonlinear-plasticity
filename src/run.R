@@ -37,7 +37,6 @@ clean_all_plant_data()
 clean_recovery_data()
 
 # Run correlations to see if perhaps we should select only a few key traits
-# TODO: Rerun these before publication / make sure indices are right in the corr_analysis script.
 run_corr_tests()
 
 # Run principal components analysis to determine traits of interest
@@ -48,10 +47,4 @@ do_measure_mcmc_sampling() # Measures
 do_flwr_rh_mcmc_sampling() # Thetas
 
 # Plot main effects ----
-make_effect_plot(param_ = "geno_effect",
-                 outfile = "figures/genotype_effect.pdf")
-make_effect_plot(param_ = "trt_effect",
-                 outfile = "figures/treatment_effect.pdf")
-make_effect_plot(param_ = "int_effect",
-                 outfile = "figures/interaction_effect.pdf")
-  
+make_effect_plot(outfile = "figures/main_effects.pdf")

@@ -33,8 +33,7 @@ clean_posterior_data_for_plotting <-
 
 
 make_effect_plot <- 
-  function(param_,
-           outfile){
+  function(outfile){
     
     trt_data <- clean_posterior_data_for_plotting("trt_effect")
     geno_data <- clean_posterior_data_for_plotting("geno_effect")
