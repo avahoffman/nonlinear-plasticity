@@ -306,11 +306,11 @@ do_measure_mcmc_sampling <-
     #                   infile = "data/recovery_plants_clean.csv",
     #                   response = "Bv",
     #                   recovery = T)
-    run_measure_model(comp_flower,
-                      infile = "data/recovery_plants_clean.csv",
-                      response = "Bf",
-                      recovery = T,
-                      iter = 10000)
+    # run_measure_model(comp_flower,
+    #                   infile = "data/recovery_plants_clean.csv",
+    #                   response = "Bf",
+    #                   recovery = T,
+    #                   iter = 10000)
     # run_measure_model(comp_gamma,
     #                   infile = "data/recovery_plants_clean.csv",
     #                   response = "Br",

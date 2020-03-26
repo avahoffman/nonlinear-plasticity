@@ -21,6 +21,7 @@ source("src/pca.R")
 source("src/measure_models.R")
 source("src/theta_model.R")
 source("src/measure_plot.R")
+source("src/breakpoint_analysis.R")
 
 ###########################################################################################
 
@@ -46,5 +47,8 @@ produce_prcomps()
 do_measure_mcmc_sampling() # Measures
 do_flwr_rh_mcmc_sampling() # Thetas
 
+# Breakpoint analysis ----
+run_breakpoint_analysis()
+
 # Plot main effects ----
-make_effect_plot(outfile = "figures/main_effects.pdf")
+make_fig_1(outfile = "figures/fig1.pdf")
