@@ -28,7 +28,7 @@ Stan_model_normal <- "
             for(i in 2:J)
                b[i] ~ cauchy(0,2.5); // Prior for the slopes following Gelman 2008
             
-            y ~ normal(mu, sigma);  // likelihood
+            y ~ normal(mu, sigma);  // Likelihood: normal
         }
         generated quantities{
             vector[N] e_y;
@@ -101,7 +101,7 @@ Stan_model_gamma <- "
             for(i in 2:J)
                b[i] ~ cauchy(0,2.5); // Prior for the slopes following Gelman 2008
                
-            y ~ gamma(alpha, beta); // Likelihood
+            y ~ gamma(alpha, beta); // Likelihood: Gamma
         }
         generated quantities{
             vector[N] e_y; // Draws of the difference between y and mu
@@ -148,19 +148,65 @@ Stan_model_gamma <- "
         }
       "
 
+## NOTE:
+## Flowering biomass model does not converge. This is probably because there are SO many zeros
+## that it's impossible to estimate all the parameters. Best just to estimate probability of 
+## flowering (theta) and plot the data by genotype.
+Stan_model_flower_mixture <- "
+       data {
+            int<lower=0> N;
+            real<lower=0> y[N];
+            int<lower=0> J; // Parameters; or columns of model matrix
+            matrix[N,J] X; // Model matrix (G x T)
+        }
+        parameters {
+            real<lower=0, upper=1> theta;
+            vector[J] b; // Regression parameters
+            real<lower=0> phi; // Gamma variance parameter
+        }
+        transformed parameters{
+            vector[N] mu; // Expected, modelled values
+            vector[N] alpha; // Shape for gamma distribution
+            vector[N] beta; // Rate for gamma distribution
+            
+            mu = exp( X * b); 
+            alpha = ( mu .* mu ) / phi;
+            beta = mu / phi;
+        }
+        model {
+            b[1] ~ cauchy(0,10); // Prior for the intercept following Gelman 2008
+  
+            for(i in 2:J)
+               b[i] ~ cauchy(0,2.5); // Prior for the slopes following Gelman 2008
+        
+            // likelihood: Gamma hurdle
+            for (i in 1:N) {
+              if (y[i] == 0) {
+                target += bernoulli_lpmf(1 | theta);
+              } else {
+                target += bernoulli_lpmf(0 | theta) +
+                          gamma_lpdf(y[i] | alpha[i], beta[i]);
+              }
+            }
+
+        }
+      "
+
 
 run_measure_model <-
   function(comp,
            infile = "data/biomass_plants_clean.csv",
            response,
-           recovery = F) {
+           recovery = F,
+           iter_ = 10000) {
     # This function...
     
     # Summarize model
     summ <-
       run_mcmc(comp = comp,
                infile = infile,
-               response = response)
+               response = response,
+               iter = iter_)
     
     # Append parameter results
     if (response == "Bv") {
@@ -241,13 +287,13 @@ do_measure_mcmc_sampling <-
     
     # All plants
     # RGR is sometimes negative, use normal model
-    run_measure_model(comp_gamma,
+    run_measure_model(comp_normal,
                       infile = "data/all_plants_clean.csv",
                       response = "uH")
     run_measure_model(comp_normal,
                       infile = "data/all_plants_clean.csv",
                       response = "urgr")
-    run_measure_model(comp_gamma,
+    run_measure_model(comp_normal,
                       infile = "data/all_plants_clean.csv",
                       response = "max_H")
     run_measure_model(comp_normal,
@@ -260,10 +306,11 @@ do_measure_mcmc_sampling <-
     #                   infile = "data/recovery_plants_clean.csv",
     #                   response = "Bv",
     #                   recovery = T)
-    # run_measure_model(comp_gamma,
-    #                   infile = "data/recovery_plants_clean.csv",
-    #                   response = "Bf",
-    #                   recovery = T)
+    run_measure_model(comp_flower,
+                      infile = "data/recovery_plants_clean.csv",
+                      response = "Bf",
+                      recovery = T,
+                      iter = 10000)
     # run_measure_model(comp_gamma,
     #                   infile = "data/recovery_plants_clean.csv",
     #                   response = "Br",

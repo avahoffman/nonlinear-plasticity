@@ -33,8 +33,8 @@ run_mcmc <-
       list(
         'N' = nrow(df.filt), # 
         'y' = response.var,
-        'X' = dm,
-        'J' = ncol(dm)
+        'J' = ncol(dm),
+        'X' = dm
       )
     
     ##SAMPLE
@@ -48,9 +48,9 @@ run_mcmc <-
         chains = 3
       )
     summ_fit <-
-      summary(fit)
+      as.data.frame(summary(fit)$summary)
     
-    return(as.data.frame(summ_fit$summary))
+    return(summ_fit)
   }
 
 
@@ -182,29 +182,7 @@ gather_flwr_rh_posterior_data <-
     )
     descr <- c("geno 11", "geno 2", "geno 5")
       ests <- cbind(rep(response, nrow(ests)), descr, ests)
-    
-    # Calculate Pr
-    Pr_calc <- data.frame()
-    Pr_vals <-  as.data.frame(ests[, 8:9])
-    for (r in 1:nrow(Pr_vals)) {
-      max_ <- max(Pr_vals[r,])
-      min_ <- min(Pr_vals[r,])
-      # Calculate the proportion of overlap on zero
-      if (max_ < 0 & min_ < 0) {
-        pr. <- 1
-      } else if (max_ > 0 & min_ > 0) {
-        pr. <- 1
-      } else if (abs(max_) > abs(min_)) {
-        pr. <- abs(max_) / (abs(min_) + abs(max_))
-      } else if (abs(max_) < abs(min_)) {
-        pr. <- abs(min_) / (abs(min_) + abs(max_))
-      } else {
-        pr. <- "NA"
-      }
-      Pr_calc[r, 1] <- round(pr., 2)
-    }
-    ests <- cbind(ests, Pr_calc)
-    colnames(ests)[11] <- "Pr"
+      
     colnames(ests)[1] <- "measure"
     
     return(ests)

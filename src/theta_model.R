@@ -14,7 +14,7 @@ Stan_model_theta <- "
           int<lower=0,upper=G> geno[N]; // Genotype index
         } 
         parameters {
-          vector<lower=0,upper=1>[G] theta; // Probability of flowering / resprouting
+          vector[G] theta; // Probability of flowering / resprouting
         } 
         model {
           theta ~ beta(1,1);
@@ -58,13 +58,13 @@ run_flwr_rh_model <-
 
 do_flwr_rh_mcmc_sampling <-
   function() {
-    comp <-
+    comp_theta <-
       stan_model(model_code = Stan_model_theta, verbose = T)
     
     # Flowering probability
-    run_flwr_rh_model(comp, response = "did_flwr")
+    run_flwr_rh_model(comp_theta, response = "did_flwr")
     
     # Resprouting probability
-    run_flwr_rh_model(comp, response = "did_rh")
+    run_flwr_rh_model(comp_theta, response = "did_rh")
     
   }
