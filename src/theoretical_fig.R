@@ -28,13 +28,7 @@ make_subplot <-
         axis.ticks.x = element_blank(),
         axis.text.y = element_blank()
       ) +
-      scale_color_viridis(
-        discrete = T,
-        begin = 0.2,
-        end = 0.7,
-        name = "Genotype",
-        option = "inferno"
-      ) +
+      scale_color_manual(values = c("#3690c0", "#ef6548")) +
       scale_x_continuous(breaks = c(10, 20), labels = c("dry", "wet"))
     
     return(gg)
