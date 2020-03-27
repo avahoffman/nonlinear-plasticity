@@ -212,5 +212,3 @@ make_fig_1 <-
       ggsave(gd, file = outfile)
     }
   }
-
-make_fig_1()

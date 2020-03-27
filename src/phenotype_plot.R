@@ -109,5 +109,3 @@ cycle_phenotype_plots <-
     }
     
   }
-
-cycle_phenotype_plots()

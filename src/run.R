@@ -22,6 +22,8 @@ source("src/measure_models.R")
 source("src/theta_model.R")
 source("src/measure_plot.R")
 source("src/breakpoint_analysis.R")
+source("src/phenotype_plot.R")
+
 
 ###########################################################################################
 
@@ -52,3 +54,6 @@ run_breakpoint_analysis()
 
 # Plot main effects ----
 make_fig_1(outfile = "figures/fig1.pdf")
+
+# Plot phenotypes by treatment ====
+cycle_phenotype_plots()
