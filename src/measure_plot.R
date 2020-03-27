@@ -194,7 +194,7 @@ make_breakpoint_plot <-
   }
 
 
-make_fig_1 <-
+make_fig_effects <-
   function(outfile = NA) {
     # This function gathers the two subplots, makes one big figure, and saves it if outfile is specified
     gd <- 
@@ -209,6 +209,9 @@ make_fig_1 <-
     if (is.na(outfile)){
       return(gd)
     } else {
-      ggsave(gd, file = outfile)
+      ggsave(plot = gd, 
+             filename = outfile,
+             height = 9,
+             width = 18)
     }
   }

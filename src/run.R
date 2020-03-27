@@ -53,7 +53,7 @@ do_flwr_rh_mcmc_sampling() # Thetas
 run_breakpoint_analysis()
 
 # Plot main effects ----
-make_fig_1(outfile = "figures/fig1.pdf")
+make_fig_effects(outfile = "figures/fig_effects_and_plasticity_functions.pdf")
 
 # Plot phenotypes by treatment ====
 cycle_phenotype_plots()

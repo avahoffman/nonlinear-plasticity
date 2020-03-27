@@ -11,8 +11,8 @@ max_Anet,Instantaneous,Anet (max.),"paste(""Max. "",A[net],"" ("", mu,""mol "",C
 max_gs,Instantaneous,gs (max.),"paste(""Max. "",g[s],"" (mol "", H[2]~O~ m^-2, s^-1,"")"")","paste(g[s],' (max.)')"
 max_fv,Instantaneous,fv/fm (max.),"paste(""Max. Fv/Fm"")",paste('fv/fm (max.)')
 max_WUEi,Instantaneous,WUEi (max.),"paste(""Max. "",WUE[i], "" ( "", mu,""mol "",CO[2],"" / "",""mol "", H[2]~O~ m^-2, s^-1,"")"")","paste(WUE[i],' (max.)')"
-Bv,Cumulative,"Biomass, aboveground","paste(""Biomass, belowground (g)"")","paste(g[s],' (mean)')"
-Br,Cumulative,"Biomass, belowground","paste(""Biomass, aboveground (g)"")","paste('Biomass, belowground')"
+Bv,Cumulative,"Biomass, aboveground","paste(""Biomass, aboveground (g)"")","paste('Biomass, aboveground')"
+Br,Cumulative,"Biomass, belowground","paste(""Biomass, belowground (g)"")","paste('Biomass, belowground')"
 DMCv,Cumulative,LDMC,"paste(""LDMC (g "",g^-1,"")"")",paste('LDMC')
 DMCr,Cumulative,RDMC,"paste(""RDMC (g "",g^-1,"")"")",paste('RDMC')
 A_B,Cumulative,"Biomass, above:below ratio","paste(""Biomass, above:below ratio"")","paste('Biomass, above:below ratio')"
@@ -26,8 +26,8 @@ Rt,Cumulative,Root tips,"paste(""Root tips"")",paste('Root tips')
 Rsa_la,Cumulative,Root area:LA ratio,"paste(""Root area: LA ratio ("",cm^2,"" "",mm^-2,"")"")",paste('Root area:LA ratio')
 srl,Cumulative,Specific root length,"paste(""Specific root length ("",mm,"" "",g^-1,"")"")",paste('Specific root length')
 ssa,Cumulative,Specific root area,"paste(""Specific root area ("",mm^2,"" "",g^-1,"")"")",paste('Specific root area')
-B_above_recovery,Recovery,"Biomass, aboveground","paste(""Biomass, belowground (g)"")","paste('Biomass, aboveground')"
-B_below_recovery,Recovery,"Biomass, belowground","paste(""Biomass, aboveground (g)"")","paste('Biomass, belowground')"
+B_above_recovery,Recovery,"Biomass, aboveground","paste(""Biomass, aboveground (g)"")","paste('Biomass, aboveground')"
+B_below_recovery,Recovery,"Biomass, belowground","paste(""Biomass, belowground (g)"")","paste('Biomass, belowground')"
 B_total_recovery,Recovery,"Biomass, total","paste(""Biomass, total (g)"")","paste('Biomass, total')"
 A_B_recovery,Recovery,"Biomass, above:below ratio","paste(""Biomass, above:below ratio"")","paste('Biomass, above:below ratio')"
 uH_recovery,Recovery,Height (mean),"paste(""Mean height (cm)"")",paste('Height (mean)')
