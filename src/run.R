@@ -57,3 +57,7 @@ make_fig_effects(outfile = "figures/fig_effects_and_plasticity_functions.pdf")
 
 # Plot phenotypes by treatment ====
 cycle_phenotype_plots()
+growth_summary()
+instantaneous_summary()
+cumulative_summary()
+recovery_summary()
