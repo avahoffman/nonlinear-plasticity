@@ -1,36 +1,36 @@
-﻿measure,facet_left,full_name
-uH,Growth,Height (mean)
-urgr,Growth,Relative growth rate (mean)
-max_H,Growth,Height (max.)
-max_rgr,Growth,Relative growth rate (max.)
-uAnet,Instantaneous,Anet (mean)
-ugs,Instantaneous,gs (mean)
-ufv,Instantaneous,fv/fm (mean)
-uWUEi,Instantaneous,WUEi (mean)
-max_Anet,Instantaneous,Anet (max.)
-max_gs,Instantaneous,gs (max.)
-max_fv,Instantaneous,fv/fm (max.)
-max_WUEi,Instantaneous,WUEi (max.)
-Bv,Cumulative,"Biomass, aboveground"
-Br,Cumulative,"Biomass, belowground"
-DMCv,Cumulative,LDMC
-DMCr,Cumulative,RDMC
-A_B,Cumulative,"Biomass, above:below ratio"
-SLA,Cumulative,SLA
-LA,Cumulative,LA
-Rl,Cumulative,Root length
-Rsa,Cumulative,Root surface area
-Rd,Cumulative,Root diameter
-Rv,Cumulative,Root volume
-Rt,Cumulative,Root tips
-Rsa_la,Cumulative,Root area:LA ratio
-srl,Cumulative,Specific root length
-ssa,Cumulative,Specific root area
-B_above_recovery,Recovery,"Biomass, aboveground"
-B_below_recovery,Recovery,"Biomass, belowground"
-B_total_recovery,Recovery,"Biomass, total"
-A_B_recovery,Recovery,"Biomass, above:below ratio"
-uH_recovery,Recovery,Height (mean)
-urgr_recovery,Recovery,Relative growth rate (mean)
-max_H_recovery,Recovery,Height (max.)
-max_rgr_recovery,Recovery,Relative growth rate (max.)
+﻿measure,facet_left,full_name,parse_name
+uH,Growth,Height (mean),"paste(""Mean height (cm)"")"
+urgr,Growth,Relative growth rate (mean),"paste(""Mean relative growth rate (ln(cm) "",week^-1,"")"")"
+max_H,Growth,Height (max.),"paste(""Max. height (cm)"")"
+max_rgr,Growth,Relative growth rate (max.),"paste(""Max. relative growth rate (ln(cm) "",week^-1,"")"")"
+uAnet,Instantaneous,Anet (mean),"paste(""Mean "",A[net],"" ("", mu,""mol "",CO[2]~ m^-2, s^-1,"")"")"
+ugs,Instantaneous,gs (mean),"paste(""Mean "",g[s],"" (mol "", H[2]~O~ m^-2, s^-1,"")"")"
+ufv,Instantaneous,fv/fm (mean),"paste(""Mean Fv/Fm"")"
+uWUEi,Instantaneous,WUEi (mean),"paste(""Mean "",WUE[i], "" ( "", mu,""mol "",CO[2],"" / "",""mol "", H[2]~O~ m^-2, s^-1,"")"")"
+max_Anet,Instantaneous,Anet (max.),"paste(""Max. "",A[net],"" ("", mu,""mol "",CO[2]~ m^-2, s^-1,"")"")"
+max_gs,Instantaneous,gs (max.),"paste(""Max. "",g[s],"" (mol "", H[2]~O~ m^-2, s^-1,"")"")"
+max_fv,Instantaneous,fv/fm (max.),"paste(""Max. Fv/Fm"")"
+max_WUEi,Instantaneous,WUEi (max.),"paste(""Max. "",WUE[i], "" ( "", mu,""mol "",CO[2],"" / "",""mol "", H[2]~O~ m^-2, s^-1,"")"")"
+Bv,Cumulative,"Biomass, aboveground","paste(""Biomass, belowground (g)"")"
+Br,Cumulative,"Biomass, belowground","paste(""Biomass, aboveground (g)"")"
+DMCv,Cumulative,LDMC,"paste(""LDMC (g "",g^-1,"")"")"
+DMCr,Cumulative,RDMC,"paste(""RDMC (g "",g^-1,"")"")"
+A_B,Cumulative,"Biomass, above:below ratio","paste(""Biomass, aboveg:below ratio"")"
+SLA,Cumulative,SLA,"paste(""SLA ("",cm^2,"" "",g^-1,"")"")"
+LA,Cumulative,LA,"paste(""LA ("",cm^2,"")"")"
+Rl,Cumulative,Root length,"paste(""Root length (mm)"")"
+Rsa,Cumulative,Root surface area,"paste(""Root surface area ("",mm^2,"")"")"
+Rd,Cumulative,Root diameter,"paste(""Root diameter (mm)"")"
+Rv,Cumulative,Root volume,"paste(""Root volume ("",mm^3,"")"")"
+Rt,Cumulative,Root tips,"paste(""Root tips"")"
+Rsa_la,Cumulative,Root area:LA ratio,"paste(""Root area: LA ratio ("",cm^2,"" "",mm^-2,"")"")"
+srl,Cumulative,Specific root length,"paste(""Specific root length ("",mm,"" "",g^-1,"")"")"
+ssa,Cumulative,Specific root area,"paste(""Specific root area ("",mm^2,"" "",g^-1,"")"")"
+B_above_recovery,Recovery,"Biomass, aboveground","paste(""Biomass, belowground (g)"")"
+B_below_recovery,Recovery,"Biomass, belowground","paste(""Biomass, aboveground (g)"")"
+B_total_recovery,Recovery,"Biomass, total","paste(""Biomass, total (g)"")"
+A_B_recovery,Recovery,"Biomass, above:below ratio","paste(""Biomass, aboveg:below ratio"")"
+uH_recovery,Recovery,Height (mean),"paste(""Mean height (cm)"")"
+urgr_recovery,Recovery,Relative growth rate (mean),"paste(""Mean relative growth rate (ln(cm) "",week^-1,"")"")"
+max_H_recovery,Recovery,Height (max.),"paste(""Max. height (cm)"")"
+max_rgr_recovery,Recovery,Relative growth rate (max.),"paste(""Max. relative growth rate (ln(cm) "",week^-1,"")"")"

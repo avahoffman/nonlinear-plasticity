@@ -24,9 +24,8 @@ clean_posterior_data_for_plotting <-
     df <-
       read.csv("output/posterior_output.csv", header = T) %>%
       dplyr::filter(param == param_) %>%
-      #dplyr::filter(measure %in% c("Bv", "Rt", "Rl")) %>%
-      dplyr::mutate(`X2.5.` = as.numeric(as.character(`X2.50.`)))  %>%
-      dplyr::mutate(`X97.5.` = as.numeric(as.character(`X97.50.`)))  %>%
+      dplyr::mutate(`X2.5.` = as.numeric(as.character(`X2.5.`)))  %>%
+      dplyr::mutate(`X97.5.` = as.numeric(as.character(`X97.5.`)))  %>%
       dplyr::mutate(mean = as.numeric(as.character(mean)))  %>%
       dplyr::mutate(sd = as.numeric(as.character(sd)))  %>%
       dplyr::mutate(`X75.` = as.numeric(as.character(`X75.`)))  %>%
@@ -93,7 +92,7 @@ make_effect_plot <-
       theme_cowplot() +
       facet_grid(
         facet_left_f ~ param_f,
-        scales = "free_y",
+        scales = "free",
         space = "free",
         switch = "y",
         labeller = as_labeller(effect_names)
@@ -174,8 +173,8 @@ make_breakpoint_plot <-
         legend.position = "none",
         axis.title.y = element_text(color = "transparent"),
         #axis.title.x = element_text(color = "transparent"),
+        strip.text.y = element_blank(),
         strip.placement = "outside",
-        axis.text.y = element_blank(),
         axis.text.x = element_text(color = "transparent"),
         axis.ticks.x = element_line(color = "transparent")
       )
@@ -193,8 +192,7 @@ make_fig_1 <-
       make_breakpoint_plot(),
       nrow = 1,
       rel_widths = c(0.7, 0.3),
-      labels = c("(a)", "(b)"),
-      hjust = 0
+      labels = c("(a)", "(b)")
     )
     
     if (is.na(outfile)){
@@ -203,3 +201,4 @@ make_fig_1 <-
       ggsave(gd, file = outfile)
     }
   }
+
