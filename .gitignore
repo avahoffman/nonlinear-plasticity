@@ -1,2 +1,5 @@
 # MAC .DS_Store
 *.DS_Store
+
+# R history
+.Rhistory
