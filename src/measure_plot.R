@@ -6,8 +6,9 @@ library(cowplot)
 library(dplyr)
 
 # Colors ----
-effect_color <- "#d0d1e6"
-no_effect_color <- "#fdd49e"
+strong_effect_color <- "#d0d1e6"
+weak_effect_color <- "#fdd49e"
+no_effect_color <- "#fc8d59"
 colfunc <- colorRampPalette(c('#fff7fb', "#a6bddb"))
 breakpoint_pal <- c(colfunc(10), '#fdd49e')
 zero_line_col <- "#bdbdbd"
@@ -32,6 +33,7 @@ clean_posterior_data_for_plotting <-
       dplyr::mutate(`X25.` = as.numeric(as.character(`X25.`)))  %>%
       dplyr::mutate(Pr = as.numeric(as.character(Pr))) %>%
       dplyr::mutate(Pr_yn = (Pr > 0.95)) %>%
+      dplyr::mutate(Pr_yn = ifelse(Pr > 0.95, "strong", ifelse(Pr > 0.9, "moderate", "none"))) %>%
       dplyr::full_join(orders, by = "measure")
     
     df$measure <- gsub("_recovery", "", df$measure)
@@ -69,13 +71,17 @@ make_effect_plot <-
     
     # Order full name so it falls alphabetically downward on the y axis
     df_sort <-
-      within(df, full_name <-
-               ordered(full_name, levels = rev(sort(
-                 unique(full_name)
+      within(df, short_parse <-
+               ordered(short_parse, levels = rev(sort(
+                 unique(short_parse)
                ))))
     
+    df_sort <-
+      within(df_sort, Pr_yn <-
+               ordered(Pr_yn, levels = c("strong","moderate","none")))
     
-    gg <- ggplot(data = df_sort, aes(y = full_name)) +
+    
+    gg <- ggplot(data = df_sort, aes(y = short_parse)) +
       geom_vline(xintercept = 0, color = zero_line_col) +
       xlab("Standard deviations") +
       geom_boxplot(
@@ -97,9 +103,12 @@ make_effect_plot <-
         switch = "y",
         labeller = as_labeller(effect_names)
       ) +
-      scale_fill_manual(values = c(no_effect_color, effect_color)) +
+      scale_y_discrete(breaks = levels(df_sort$short_parse),
+                       labels = parse(text = levels(df_sort$short_parse))) +
+      scale_fill_manual(name = "Effect",
+                        values = c(strong_effect_color, weak_effect_color, no_effect_color)) +
       theme(
-        legend.position = "none",
+        legend.position = "right",
         axis.title.y = element_blank(),
         strip.placement = "outside"
       )
@@ -146,14 +155,14 @@ make_breakpoint_plot <-
     
     # Order full name so it falls alphabetically downward on the y axis
     df_sort <-
-      within(df, full_name <-
-               ordered(full_name, levels = rev(sort(
-                 unique(full_name)
+      within(df, short_parse <-
+               ordered(short_parse, levels = rev(sort(
+                 unique(short_parse)
                ))))
     
     gg <-
       ggplot(data = df_sort, aes(
-        y = full_name,
+        y = short_parse,
         x = as.factor(facet_geno),
         fill = `Est.`
       )) +
@@ -166,6 +175,8 @@ make_breakpoint_plot <-
         labeller = label_parsed
       ) +
       xlab("Breakpoint estimate") +
+      scale_y_discrete(breaks = levels(df_sort$short_parse),
+                       labels = parse(text = levels(df_sort$short_parse))) +
       scale_fill_manual(values = c(breakpoint_pal)) +
       geom_text(data = df_sort[(df_sort$Est. != "Linear"), ], aes(label = paste(Est., "%", sep = ""))) +
       geom_text(data = df_sort[(df_sort$Est. == "Linear"), ], aes(label = Est.)) +
@@ -202,3 +213,4 @@ make_fig_1 <-
     }
   }
 
+make_fig_1()
