@@ -29,7 +29,8 @@ cycle_genotypes <-
       for (i in 1:3) {
         df <-
           read.csv(infile, header = T)
-        df_one_geno <- df[(df$geno == i), ]
+        # Remove Saturated treatment since we don't know the exact %VWC
+        df_one_geno <- df[(df$geno == i & df$trt != 30), ]
         if (i > 1) {
           breakpoints <-
             rbind(breakpoints, get_breakpoints(df_one_geno, resp))
