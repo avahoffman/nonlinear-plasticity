@@ -5,6 +5,11 @@
 
 get_breakpoints <-
   function(df, response) {
+    # This function detects breakpoints in the treatment regression using the segmented 
+    # package
+    # df: data frame from which response variable is collected
+    # response: response variable (string)
+    
     fit <-
       lm(as.formula(paste(response, " ~ trt", sep = "")), data = df)
     seg_fit <- suppressWarnings(segmented::segmented(fit,
