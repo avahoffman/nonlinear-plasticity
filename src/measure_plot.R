@@ -171,8 +171,8 @@ make_breakpoint_plot <-
       facet_grid(
         facet_left_f ~ facet_geno,
         scales = "free",
-        space = "free",
-        labeller = label_parsed
+        space = "free"#,
+        #labeller = label_parsed
       ) +
       xlab("Breakpoint estimate") +
       scale_y_discrete(breaks = levels(df_sort$short_parse),
