@@ -72,23 +72,23 @@ gather_posterior_data <-
     descr <- gsub("as.factor", "", colnames(dm))
     descr <- c(
       gsub("geno)3", "geno)5", descr),
-      rep("no_descr", 26)
+      rep("no_descr", 20)
     )
     
     param <-
       c(
         rep("beta", 15),
-        rep("geno_avg", 3),
-        "geno_effect",
-        rep("trt_avg", 5),
+        "G11[R]-G2[R]",
+        "G11[R]-G5",
+        "G2[R]-G5",
         "trt_effect",
         "int_effect",
         rep("posterior value", 15)
       )
     
-    geno <- c(rep("none", 26), rep("G11", 5), rep("G2", 5), rep("G5", 5))
+    geno <- c(rep("none", 20), rep("G11", 5), rep("G2", 5), rep("G5", 5))
     
-    trt <- c(rep("none", 26), rep(c("10","15","20","25","Sat'd"),3))
+    trt <- c(rep("none", 20), rep(c("10","15","20","25","Sat'd"),3))
     
     ests <- cbind(param, ests, geno, trt)
     

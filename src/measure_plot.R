@@ -10,7 +10,7 @@ strong_effect_color <- "#d0d1e6"
 weak_effect_color <- "#fdd49e"
 no_effect_color <- "#fc8d59"
 colfunc <- colorRampPalette(c('#fff7fb', "#a6bddb"))
-breakpoint_pal <- c(colfunc(6), '#fdd49e')
+breakpoint_pal <- c(colfunc(15), '#fdd49e')
 zero_line_col <- "#bdbdbd"
 
 
@@ -171,8 +171,8 @@ make_breakpoint_plot <-
       facet_grid(
         facet_left_f ~ facet_geno,
         scales = "free",
-        space = "free"#,
-        #labeller = label_parsed
+        space = "free",
+        labeller = label_parsed
       ) +
       xlab("Breakpoint estimate") +
       scale_y_discrete(breaks = levels(df_sort$short_parse),

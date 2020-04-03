@@ -25,7 +25,7 @@ Stan_model_normal <- "
         model{
             b[1] ~ cauchy(0,100); // Prior for the intercept following Gelman 2008
   
-            for(i in 2:J)
+            for(i in 2:J) 
                b[i] ~ cauchy(0,2.5); // Prior for the slopes following Gelman 2008
             
             y ~ normal(mu, sigma);  // Likelihood: normal
@@ -33,10 +33,8 @@ Stan_model_normal <- "
         generated quantities{
             vector[N] e_y;
             vector[15] Y;
-            vector[3] G;
-            vector[5] T;
             vector[1] T_E;
-            vector[1] G_E;
+            vector[3] G_E;
             vector[1] I_E;
     
             Y[1] = b[1];
@@ -54,20 +52,14 @@ Stan_model_normal <- "
             Y[13] = b[1] + b[3] + b[7] + b[13];
             Y[14] = b[1] + b[4] + b[7] + b[14];
             Y[15] = b[1] + b[5] + b[7] + b[15];
-    
-            G[1] = ( b[1] + (b[1] + b[2]) + (b[1] + b[3]) + (b[1] + b[4]) + (b[1] + b[5])) / 5 ;
-            G[2] = ( (b[1] + b[6]) + (b[1] + b[2] + b[6] + b[8]) + (b[1] + b[3] + b[6] + b[9]) + (b[1] + b[4] + b[6] + b[10]) + (b[1] + b[5] + b[6] + b[11])) / 5 ;
-            G[3] = ( (b[1] + b[7]) + (b[1] + b[2] + b[7] + b[12]) + (b[1] + b[3] + b[7] + b[13]) + (b[1] + b[4] + b[7] + b[14]) + (b[1] + b[5] + b[7] + b[15])) / 5 ;
-    
-            T[1] = ( b[1] + (b[1] + b[6]) + (b[1] + b[7])) / 3 ;
-            T[2] = ( (b[1] + b[2]) + (b[1] + b[2] + b[6] + b[8]) + (b[1] + b[2] + b[7] + b[12]) ) / 3 ;
-            T[3] = ( (b[1] + b[3]) + (b[1] + b[3] + b[6] + b[9]) + (b[1] + b[3] + b[7] + b[13]) ) / 3 ;
-            T[4] = ( (b[1] + b[4]) + (b[1] + b[4] + b[6] + b[10]) + (b[1] + b[4] + b[7] + b[14]) ) / 3 ;
-            T[5] = ( (b[1] + b[5]) + (b[1] + b[5] + b[6] + b[11]) + (b[1] + b[5] + b[7] + b[15]) ) / 3 ;
-    
-            G_E[1] = ( b[6] + b[7] ) / 2 ;
-    
+            
+            // Average treatment effect (effect of treatments 15 thru 30)
             T_E[1] = ( b[2] + b[3] + b[4] + b[5] ) / 4 ;
+            
+            // Difference between genos at 20%
+            G_E[1] = ( b[1] + b[3] ) - (b[1] + b[3] + b[6] + b[9]); // G11 minus G2
+            G_E[2] = ( b[1] + b[3] ) - (b[1] + b[3] + b[7] + b[13]); // G11 minus G5
+            G_E[3] =  (b[1] + b[3] + b[6] + b[9]) -  (b[1] + b[3] + b[7] + b[13]); // G2 minus G5
     
             I_E[1] = ( b[8] + b[9] + b[10] + b[11] + b[12] + b[13] + b[14] + b[15] ) / 8 ;
     
@@ -104,14 +96,12 @@ Stan_model_gamma <- "
             y ~ gamma(alpha, beta); // Likelihood: Gamma
         }
         generated quantities{
-            vector[N] e_y; // Draws of the difference between y and mu
-            vector[15] Y; // Modeled posteriors of the G x T groups
-            vector[3] G; // Genotype distribution averaged over treatments
-            vector[5] T; // Treatment distribution averaged over genotypes
-            vector[1] T_E; // Average treatment effect
-            vector[1] G_E; // Average genotype effect
-            vector[1] I_E; // Average interaction effect
-        
+            vector[N] e_y;
+            vector[15] Y;
+            vector[1] T_E;
+            vector[3] G_E;
+            vector[1] I_E;
+            
             Y[1] = exp(b[1]);
             Y[2] = exp(b[1] + b[2]);
             Y[3] = exp(b[1] + b[3]);
@@ -128,22 +118,16 @@ Stan_model_gamma <- "
             Y[14] = exp(b[1] + b[4] + b[7] + b[14]);
             Y[15] = exp(b[1] + b[5] + b[7] + b[15]);
             
-            G[1] = exp( b[1] + (b[1] + b[2]) + (b[1] + b[3]) + (b[1] + b[4]) + (b[1] + b[5])) / 5 ;
-            G[2] = exp( (b[1] + b[6]) + (b[1] + b[2] + b[6] + b[8]) + (b[1] + b[3] + b[6] + b[9]) + (b[1] + b[4] + b[6] + b[10]) + (b[1] + b[5] + b[6] + b[11])) / 5 ;
-            G[3] = exp( (b[1] + b[7]) + (b[1] + b[2] + b[7] + b[12]) + (b[1] + b[3] + b[7] + b[13]) + (b[1] + b[4] + b[7] + b[14]) + (b[1] + b[5] + b[7] + b[15])) / 5 ;
-        
-            T[1] = exp( b[1] + (b[1] + b[6]) + (b[1] + b[7])) / 3 ;
-            T[2] = exp( (b[1] + b[2]) + (b[1] + b[2] + b[6] + b[8]) + (b[1] + b[2] + b[7] + b[12]) ) / 3 ;
-            T[3] = exp( (b[1] + b[3]) + (b[1] + b[3] + b[6] + b[9]) + (b[1] + b[3] + b[7] + b[13]) ) / 3 ;
-            T[4] = exp( (b[1] + b[4]) + (b[1] + b[4] + b[6] + b[10]) + (b[1] + b[4] + b[7] + b[14]) ) / 3 ;
-            T[5] = exp( (b[1] + b[5]) + (b[1] + b[5] + b[6] + b[11]) + (b[1] + b[5] + b[7] + b[15]) ) / 3 ;
+            // Average treatment effect (effect of treatments 15 thru 30)
+            T_E[1] = ( b[2] + b[3] + b[4] + b[5] ) / 4 ;
             
-            G_E[1] = ( b[6] + b[7] ) / 2 ; 
-            
-            T_E[1] = ( b[2] + b[3] + b[4] + b[5] ) / 4 ; 
-            
+            // Difference between genos at 20%
+            G_E[1] = exp( b[1] + b[3] ) - exp(b[1] + b[3] + b[6] + b[9]); // G11 minus G2
+            G_E[2] = exp( b[1] + b[3] ) - exp(b[1] + b[3] + b[7] + b[13]); // G11 minus G5
+            G_E[3] = exp(b[1] + b[3] + b[6] + b[9]) -  exp(b[1] + b[3] + b[7] + b[13]); // G2 minus G5
+    
             I_E[1] = ( b[8] + b[9] + b[10] + b[11] + b[12] + b[13] + b[14] + b[15] ) / 8 ;
-            
+    
             e_y = y - mu;
         }
       "

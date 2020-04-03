@@ -2,19 +2,26 @@
 ## DETERMINE BREAKPOINTS IN GENOTYPE TREATMENT FUNCTION
 ###########################################################################################
 # Very nice information about segmented here: https://rpubs.com/MarkusLoew/12164
+library(segmented)
+
 
 get_breakpoints <-
   function(df, response) {
-    # This function detects breakpoints in the treatment regression using the segmented 
+    # This function detects breakpoints in the treatment regression using the segmented
     # package
     # df: data frame from which response variable is collected
     # response: response variable (string)
     
     fit <-
-      lm(as.formula(paste(response, " ~ trt", sep = "")), data = df)
-    seg_fit <- suppressWarnings(segmented::segmented(fit,
-                                                     seg.Z = ~ trt,
-                                                     n.psi = 1)) # Only one breakpoint, for simplicity
+      glm(as.formula(paste(response, " ~ trt", sep = "")), data = df)
+    seg_fit <-
+      suppressWarnings(segmented(
+        fit,
+        seg.Z = ~ trt,
+        psi = 20,
+        npsi = 1, # Only one breakpoint, for simplicity
+        control = seg.control(n.boot = 10)
+      ))
     if (is.null(seg_fit$psi)) {
       return(c(0, 0, 0))
     } else {
@@ -44,7 +51,8 @@ cycle_genotypes <-
         }
       }
       breakpoints <- as.data.frame(breakpoints)
-      colnames(breakpoints) <- c("Initial", "Est.", "St.Err") # Needed in case a 3x3 matrix of zeros with no colnames is made!
+      colnames(breakpoints) <-
+        c("Initial", "Est.", "St.Err") # Needed in case a 3x3 matrix of zeros with no colnames is made!
       breakpoints$geno <- c(11, 2, 5)
       breakpoints$measure <- c(rep(resp, 3))
       breakpoints$subset <- c(rep(subset, 3))
@@ -53,7 +61,8 @@ cycle_genotypes <-
       } else {
         breakpoints_df <- breakpoints
       }
-    }
+    } 
+    breakpoints_df[(breakpoints_df$St.Err > 3),]$Est. <- 0
     rownames(breakpoints_df) <- seq(1, nrow(breakpoints_df))
     return(breakpoints_df)
   }
@@ -115,11 +124,10 @@ run_breakpoint_analysis <-
         cycle_genotypes(
           infile = "data/all_plants_clean.csv",
           subset = "Growth",
-          response =  c(
-            "urgr",
-            "uH",
-            "max_rgr",
-            "max_H")
+          response =  c("urgr",
+                        "uH",
+                        "max_rgr",
+                        "max_H")
         )
       )
     
