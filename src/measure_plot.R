@@ -47,9 +47,11 @@ make_effect_plot <-
     # This function..
     
     effect_names <- c(
-      `trt_effect` = "Treatment effect",
-      `geno_effect` = "Genotype effect",
-      `int_effect` = "Interaction effect",
+      `trt_effect` = "Treatment~effect",
+      `G11[R]-G2[R]` = "G11[R]-G2[R]",
+      `G11[R]-G5` = "G11[R]-G5",
+      `G2[R]-G5` = "G2[R]-G5",
+      #`int_effect` = "Interaction~effect",
       `Growth` = "Growth",
       `Instantaneous` = "Instantaneous",
       `Cumulative` = "Cumulative",
@@ -57,13 +59,15 @@ make_effect_plot <-
     )
     
     trt_data <- clean_posterior_data_for_plotting("trt_effect")
-    geno_data <- clean_posterior_data_for_plotting("geno_effect")
+    geno_data1 <- clean_posterior_data_for_plotting("G11[R]-G2[R]")
+    geno_data2 <- clean_posterior_data_for_plotting("G11[R]-G5")
+    geno_data3 <- clean_posterior_data_for_plotting("G2[R]-G5")
     int_data <- clean_posterior_data_for_plotting("int_effect")
-    df <- rbind(trt_data, geno_data, int_data)
+    df <- rbind(trt_data, geno_data1, geno_data2, geno_data3)
     
     # Make a reordered factor to order facets
     df$param_f = factor(df$param,
-                        levels = c('trt_effect', 'geno_effect', 'int_effect'))
+                        levels = c('trt_effect', 'G11[R]-G2[R]', 'G11[R]-G5', 'G2[R]-G5'))
     
     # Make a reordered factor to order facets
     df$facet_left_f = factor(df$facet_left,
@@ -80,8 +84,10 @@ make_effect_plot <-
       within(df_sort, Pr_yn <-
                ordered(Pr_yn, levels = c("strong","moderate","none")))
     
+    labeller(Species = setNames(unlist(lbls), unique(iris$Species)))
     
-    gg <- ggplot(data = df_sort, aes(y = short_parse)) +
+    # gg <- 
+      ggplot(data = df_sort, aes(y = short_parse)) +
       geom_vline(xintercept = 0, color = zero_line_col) +
       xlab("Standard deviations") +
       geom_boxplot(
@@ -101,7 +107,7 @@ make_effect_plot <-
         scales = "free",
         space = "free",
         switch = "y",
-        labeller = as_labeller(effect_names)
+        labeller = as_labeller(effect_names, label_parsed)
       ) +
       scale_y_discrete(breaks = levels(df_sort$short_parse),
                        labels = parse(text = levels(df_sort$short_parse))) +
