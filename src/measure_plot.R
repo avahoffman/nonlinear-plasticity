@@ -32,8 +32,8 @@ clean_posterior_data_for_plotting <-
       # Filter by parameter
       dplyr::filter(param == param_) %>%
       # Convert several columns to numeric values so that boxplots can be created
-      dplyr::mutate(`X2.5.` = as.numeric(as.character(`X2.5.`)))  %>%
-      dplyr::mutate(`X97.5.` = as.numeric(as.character(`X97.5.`)))  %>%
+      dplyr::mutate(`X2.50.` = as.numeric(as.character(`X2.50.`)))  %>%
+      dplyr::mutate(`X97.50.` = as.numeric(as.character(`X97.50.`)))  %>%
       dplyr::mutate(mean = as.numeric(as.character(mean)))  %>%
       dplyr::mutate(sd = as.numeric(as.character(sd)))  %>%
       dplyr::mutate(`X75.` = as.numeric(as.character(`X75.`)))  %>%
@@ -95,16 +95,14 @@ make_effect_plot <-
       within(df_sort, Pr_yn <-
                ordered(Pr_yn, levels = c("strong","moderate","none")))
     
-    labeller(Species = setNames(unlist(lbls), unique(iris$Species)))
-    
     gg <- 
       ggplot(data = df_sort, aes(y = short_parse)) +
       geom_vline(xintercept = 0, color = zero_line_col) +
       xlab("Standard deviations") +
       geom_boxplot(
         aes(
-          xmin = `X2.5.` / sd,
-          xmax = `X97.5.` / sd,
+          xmin = `X2.50.` / sd,
+          xmax = `X97.50.` / sd,
           xmiddle = mean / sd,
           xupper = `X75.` / sd,
           xlower = `X25.` / sd,
