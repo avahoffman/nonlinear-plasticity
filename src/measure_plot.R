@@ -16,15 +16,22 @@ zero_line_col <- "#bdbdbd"
 
 clean_posterior_data_for_plotting <-
   function(param_) {
-    # This function ..
+    # This function gathers data from the posterior distributions from the modelling step.
+    # 
+    # param_: string indicating the type of parameter to be filtered out of the final
+    # posterior distribution data, eg. "trt_effect"
     
+    # Data containing full / parse-able names for phenotypic measures
     orders <-
       as.tbl(read.csv("data/measure_order.csv", header = T)) %>%
       dplyr::mutate(measure = as.character(measure))
     
     df <-
+      # Read posterior data
       read.csv("output/posterior_output.csv", header = T) %>%
+      # Filter by parameter
       dplyr::filter(param == param_) %>%
+      # Convert several columns to numeric values so that boxplots can be created
       dplyr::mutate(`X2.5.` = as.numeric(as.character(`X2.5.`)))  %>%
       dplyr::mutate(`X97.5.` = as.numeric(as.character(`X97.5.`)))  %>%
       dplyr::mutate(mean = as.numeric(as.character(mean)))  %>%
@@ -32,10 +39,14 @@ clean_posterior_data_for_plotting <-
       dplyr::mutate(`X75.` = as.numeric(as.character(`X75.`)))  %>%
       dplyr::mutate(`X25.` = as.numeric(as.character(`X25.`)))  %>%
       dplyr::mutate(Pr = as.numeric(as.character(Pr))) %>%
+      # Create a boolean for strong or no support for difference from zero
       dplyr::mutate(Pr_yn = (Pr > 0.95)) %>%
+      # Update here includes Pr of strong, moderate, or no support for difference from zero
       dplyr::mutate(Pr_yn = ifelse(Pr > 0.95, "strong", ifelse(Pr > 0.9, "moderate", "none"))) %>%
+      # Attach to data containing parse-able names
       dplyr::full_join(orders, by = "measure")
     
+    # Remove "recovery" epithet from several measures (not desired in plotting, instead use a facet)
     df$measure <- gsub("_recovery", "", df$measure)
     
     return(df)
