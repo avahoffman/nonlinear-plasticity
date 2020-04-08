@@ -86,7 +86,7 @@ make_effect_plot <-
     
     labeller(Species = setNames(unlist(lbls), unique(iris$Species)))
     
-    # gg <- 
+    gg <- 
       ggplot(data = df_sort, aes(y = short_parse)) +
       geom_vline(xintercept = 0, color = zero_line_col) +
       xlab("Standard deviations") +
