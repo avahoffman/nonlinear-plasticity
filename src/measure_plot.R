@@ -136,6 +136,8 @@ make_effect_plot <-
 
 clean_breakpoint_data_for_plotting <-
   function() {
+    # This function...
+    
     orders <-
       as.tbl(read.csv("data/measure_order.csv", header = T)) %>%
       dplyr::mutate(measure = as.character(measure))
@@ -157,6 +159,8 @@ clean_breakpoint_data_for_plotting <-
 
 make_breakpoint_plot <-
   function() {
+    # This function ...
+    
     df <- clean_breakpoint_data_for_plotting()
     
     # Make a reordered factor to order facets
@@ -213,7 +217,10 @@ make_breakpoint_plot <-
 
 make_fig_effects <-
   function(outfile = NA) {
-    # This function gathers the two subplots, makes one big figure, and saves it if outfile is specified
+    # This function gathers the two subplots, makes one big figure, 
+    # and saves it if outfile is specified
+    
+    # Plot two subplots in appropriate widths
     gd <- 
       plot_grid(
       make_effect_plot(),
@@ -223,6 +230,7 @@ make_fig_effects <-
       labels = c("(a)", "(b)")
     )
     
+    # Write file or return gridded plot
     if (is.na(outfile)){
       return(gd)
     } else {
