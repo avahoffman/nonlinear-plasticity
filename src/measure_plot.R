@@ -55,20 +55,22 @@ clean_posterior_data_for_plotting <-
 
 make_effect_plot <-
   function() {
-    # This function..
+    # This function makes the effect plots for treatment (general) and each pairwise comparison
+    # for the different genotypes
     
     effect_names <- c(
       `trt_effect` = "Treatment~effect",
       `G11[R]-G2[R]` = "G11[R]-G2[R]",
       `G11[R]-G5` = "G11[R]-G5",
       `G2[R]-G5` = "G2[R]-G5",
-      #`int_effect` = "Interaction~effect",
+      #`int_effect` = "Interaction~effect", # Excluded from the labeller for now
       `Growth` = "Growth",
       `Instantaneous` = "Instantaneous",
       `Cumulative` = "Cumulative",
       `Recovery` = "Recovery"
     )
     
+    # Gather each subset of data depending on the param / effect desired for plotting
     trt_data <- clean_posterior_data_for_plotting("trt_effect")
     geno_data1 <- clean_posterior_data_for_plotting("G11[R]-G2[R]")
     geno_data2 <- clean_posterior_data_for_plotting("G11[R]-G5")
@@ -76,11 +78,11 @@ make_effect_plot <-
     int_data <- clean_posterior_data_for_plotting("int_effect")
     df <- rbind(trt_data, geno_data1, geno_data2, geno_data3)
     
-    # Make a reordered factor to order facets
+    # Make a reordered factor to order facets (top)
     df$param_f = factor(df$param,
                         levels = c('trt_effect', 'G11[R]-G2[R]', 'G11[R]-G5', 'G2[R]-G5'))
     
-    # Make a reordered factor to order facets
+    # Make a reordered factor to order facets (left)
     df$facet_left_f = factor(df$facet_left,
                              levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
     
@@ -91,14 +93,20 @@ make_effect_plot <-
                  unique(short_parse)
                ))))
     
+    # Order level of evidence in the legend
     df_sort <-
       within(df_sort, Pr_yn <-
                ordered(Pr_yn, levels = c("strong","moderate","none")))
     
+    # Make the plot
     gg <- 
       ggplot(data = df_sort, aes(y = short_parse)) +
+      
+      # Add a zero line and x axis label
       geom_vline(xintercept = 0, color = zero_line_col) +
       xlab("Standard deviations") +
+      
+      # Add boxplots
       geom_boxplot(
         aes(
           xmin = `X2.50.` / sd,
@@ -110,7 +118,11 @@ make_effect_plot <-
         ),
         stat = "identity"
       ) +
+      
+      # Add general theme
       theme_cowplot() +
+      
+      # Facet according to effect type (param_f) and phenotypic measure grouping (facet_left_f)
       facet_grid(
         facet_left_f ~ param_f,
         scales = "free",
@@ -118,10 +130,16 @@ make_effect_plot <-
         switch = "y",
         labeller = as_labeller(effect_names, label_parsed)
       ) +
+      
+      # Parse y labels
       scale_y_discrete(breaks = levels(df_sort$short_parse),
                        labels = parse(text = levels(df_sort$short_parse))) +
+      
+      # Custom boxplot fill
       scale_fill_manual(name = "Effect",
                         values = c(strong_effect_color, weak_effect_color, no_effect_color)) +
+      
+      #Customize legend
       theme(
         legend.position = "right",
         axis.title.y = element_blank(),
