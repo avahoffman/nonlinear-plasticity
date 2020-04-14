@@ -18,10 +18,13 @@ get_breakpoints <-
       suppressWarnings(segmented(
         fit,
         seg.Z = ~ trt,
-        psi = 20,
-        npsi = 1, # Only one breakpoint, for simplicity
-        control = seg.control(n.boot = 10)
+        psi = 22,
+        # Only one breakpoint, for simplicity
+        npsi = 1,
+        # Bootstrap params
+        control = seg.control(n.boot = 50, tol = 1e-07)
       ))
+    print(seg_fit)
     if (is.null(seg_fit$psi)) {
       return(c(0, 0, 0))
     } else {
@@ -42,7 +45,7 @@ cycle_genotypes <-
         df <-
           read.csv(infile, header = T)
         # Remove Saturated treatment since we don't know the exact %VWC
-        df_one_geno <- df[(df$geno == i & df$trt != 30), ]
+        df_one_geno <- df[(df$geno == i & df$trt != 30),]
         if (i > 1) {
           breakpoints <-
             rbind(breakpoints, get_breakpoints(df_one_geno, resp))
@@ -61,8 +64,8 @@ cycle_genotypes <-
       } else {
         breakpoints_df <- breakpoints
       }
-    } 
-    breakpoints_df[(breakpoints_df$St.Err > 3),]$Est. <- 0
+    }
+    breakpoints_df[(breakpoints_df$St.Err > 3), ]$Est. <- 0
     rownames(breakpoints_df) <- seq(1, nrow(breakpoints_df))
     return(breakpoints_df)
   }
