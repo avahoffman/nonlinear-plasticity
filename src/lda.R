@@ -7,7 +7,9 @@ prepare_lda_data <-
   function(infile,
            responses,
            leave_out_indicator,
-           subset) {
+           subset,
+           v_just,
+           spoke_scale_factor) {
     # This function..
     
     # Read in data
@@ -45,9 +47,9 @@ prepare_lda_data <-
     load_dat$angle <- atan2(load_dat$LD2, load_dat$LD1)
     load_dat$x_start <- load_dat$y_start <- 0
     load_dat$x_end <-
-      cos(load_dat$angle) * log(load_dat$length) * 1.5 # This sets the length of your lines.
+      cos(load_dat$angle) * log10(load_dat$length) * spoke_scale_factor # This sets the length of your lines.
     load_dat$y_end <-
-      sin(load_dat$angle) * log(load_dat$length) * 1.5 # This sets the length of your lines.
+      sin(load_dat$angle) * log10(load_dat$length) * spoke_scale_factor # This sets the length of your lines.
     
     # Data containing full / parse-able names for phenotypic measures
     orders <-
@@ -55,8 +57,9 @@ prepare_lda_data <-
       dplyr::mutate(varnames = as.character(measure))
     load_dat <-
       load_dat %>% left_join(orders, by = "varnames")
+    # Add leave out indicator and v_just for plotting
     load_dat <-
-      cbind(load_dat, leave_out_indicator)
+      cbind(load_dat, leave_out_indicator, v_just)
     print(load_dat)
     
     # save only top loadings in LD1 and LD2
@@ -74,12 +77,12 @@ prepare_lda_data <-
     
     centroids <- aggregate(cbind(LD1, LD2) ~ geno, plotdat, mean)
     
-    return(list(plotdat, prop.lda, load_dat, centroids))
+    return(list(plotdat, prop.lda, load_dat, centroids, spoke_scale_factor))
   }
 
 
 make_lda_plot <-
-  function(d) {
+  function(d, vjust, xlim = NA, ylim = NA) {
     # This function..
     
     genotype_colors <-
@@ -124,7 +127,7 @@ make_lda_plot <-
           x_start,
           y_start,
           angle = angle,
-          radius = log(length) * 1.5
+          radius = log10(length) * d[[5]]
         ),
         d[[3]],
         color = "gray",
@@ -136,13 +139,13 @@ make_lda_plot <-
           y = y_end,
           x = x_end,
           label = short_parse,
-          hjust = h_just
+          hjust = h_just,
+          vjust = v_just
         ),
         #can change alpha=length within aes
         d[[3]],
         alpha = 0.6,
-        size = 2,
-        vjust = v_just,
+        size = 3,
         colour = "black",
         show.legend = FALSE,
         parse = TRUE
@@ -161,7 +164,14 @@ make_lda_plot <-
              length = FALSE) +
       theme(legend.title = element_blank(),
             legend.position = "none",
-            legend.text.align = 0) 
+            legend.text.align = 0)
+
+    if(!(is.na(xlim))){
+      gg <- gg + xlim(-xlim, xlim)
+    }
+    if(!(is.na(ylim))){
+      gg <- gg + ylim(ylim)
+      }
     
     
     return(gg)
@@ -183,7 +193,9 @@ gather_lda_plots <-
                        "max_H",
                        "trt"),
         subset = "Growth",
-        leave_out_indicator = c(1, 1, 1, 1, 0)
+        leave_out_indicator = c(1, 1, 1, 1, 0),
+        v_just = c(1,0,1,0.5,0.5),
+        spoke_scale_factor = 4
       )
     
     # Cumulative subset
@@ -210,8 +222,12 @@ gather_lda_plots <-
         ),
         subset = "Cumulative",
         leave_out_indicator = c(1, 1, 1, 1, 1,
-                                1, 1, 1, 1, 1,
-                                1, 1, 1, 1, 0)
+                                0, 1, 1, 1, 1,
+                                1, 1, 1, 1, 0),
+        v_just = c(0.5,0.5,0.5,0.5,0.5,
+                   0.5,0.5,0.5,0.5,0.5,
+                   0.5,0.5,0.5,0.5,0.5),
+        spoke_scale_factor = 4
       )
     
     # Instantaneous subset
@@ -229,17 +245,22 @@ gather_lda_plots <-
                        "trt"),
         subset = "Instantaneous",
         leave_out_indicator = c(1, 1, 1, 1,
-                                1, 1, 0)
+                                1, 1, 0),
+        v_just = c(0.5,1,1,0,
+                   0.5,0.5,0.5),
+        spoke_scale_factor = 4
       )
     
-    leg <- g_legend(make_lda_plot(d1) + theme(legend.position = "right"))
+    leg <- g_legend(make_lda_plot(d1) + theme(legend.position = "right",
+                                              # Spread out legend keys a little bit more
+                                              legend.key.size = unit(0.7, "cm")))
     
     # Plot two subplots in appropriate widths
     gd <-
       plot_grid(
         make_lda_plot(d1),
         make_lda_plot(d3),
-        make_lda_plot(d2),
+        make_lda_plot(d2, xlim = 6),
         leg,
         nrow = 1,
         rel_widths = c(1, 1, 1, 0.2),
@@ -253,9 +274,10 @@ gather_lda_plots <-
       ggsave(
         plot = gd,
         filename = outfile,
-        height = 6,
-        width = 18
+        height = 5,
+        width = 15
       )
     }
   }
 
+gather_lda_plots()
