@@ -34,7 +34,7 @@ make_phenotype_plot <-
     gg <-
       ggplot(data = df, aes(x = trt, y = mean, color = geno)) +
       theme_cowplot() +
-      geom_errorbar(aes(ymin = `X2.5.`, ymax = `X97.5.`), width = 2) +
+      geom_errorbar(aes(ymin = `X2.50.`, ymax = `X97.50.`), width = 2) +
       geom_line() +
       geom_point(aes(shape = geno, color = geno),
                  size = 4,
@@ -125,27 +125,16 @@ cycle_phenotype_plots <-
   }
 
 
-geno_legend <-
-  function(a.gplot) {
-    tmp <-
-      ggplot_gtable(ggplot_build(a.gplot))
-    leg <-
-      which(sapply(tmp$grobs,
-                   function(x)
-                     x$name) == "guide-box")
-    legend <-
-      tmp$grobs[[leg]]
-    
-    return(legend)
-  }
-
+leg <-
+  g_legend(make_phenotype_plot("Bv") + theme(legend.margin = margin(l = 0.6, unit =
+                                                                      'cm')))
 
 growth_summary <-
   function() {
-    meas_list <- c("urgr",
+    meas_list <- c("max_H",
                    "uH",
                    "max_rgr",
-                   "max_H")
+                   "urgr")
     
     p <- list()
     i = 0
@@ -156,13 +145,16 @@ growth_summary <-
     }
     
     grid <-
-      plot_grid(p[[1]],
-                p[[2]],
-                p[[3]],
-                p[[4]],
-                align = "vh",
-                axis = "bl",
-                nrow = 2)
+      plot_grid(
+        p[[1]],
+        p[[2]],
+        p[[3]],
+        p[[4]],
+        align = "vh",
+        axis = "bl",
+        nrow = 2,
+        labels = c("(a)", "(b)", "(c)", "(d)")
+      )
     
     ggsave(
       gridExtra::grid.arrange(

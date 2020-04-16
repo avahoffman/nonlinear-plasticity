@@ -9,7 +9,8 @@ prepare_lda_data <-
            leave_out_indicator,
            subset,
            v_just,
-           spoke_scale_factor) {
+           spoke_scale_factor,
+           by_geno = T) {
     # This function..
     
     # Read in data
@@ -17,11 +18,20 @@ prepare_lda_data <-
       tidyr::drop_na()
     
     # Only include desired response variables in the argument
-    df <- df[, c("geno", responses)]
-    group_var <- c("geno")
+    if (by_geno) {
+      df <- df[, c("geno", responses)]
+      group_var <- c("geno")
+    } else{
+      df <- df[, c("combo", responses)]
+      group_var <- c("combo")
+    }
     
     # LDA formula
-    lda_form <- as.formula(paste("geno ~ ."))
+    if (by_geno) {
+      lda_form <- as.formula(paste("geno ~ ."))
+    } else {
+      lda_form <- as.formula(paste("combo ~ ."))
+    }
     
     # Features are everything but the geno
     feats <-
@@ -70,19 +80,32 @@ prepare_lda_data <-
       dplyr::filter(leave_out_indicator != 0)
     
     subset_f <- rep(subset, nrow(plda$x))
-    plotdat <-
-      cbind(data.frame(pop = df %>%
-                         dplyr::select(geno), plda$x),
-            subset_f)
     
-    centroids <- aggregate(cbind(LD1, LD2) ~ geno, plotdat, mean)
+    if (by_geno) {
+      plotdat <-
+        cbind(data.frame(pop = df %>%
+                           dplyr::select(geno), plda$x),
+              subset_f)
+      
+      centroids <- aggregate(cbind(LD1, LD2) ~ geno, plotdat, mean)
+    } else {
+      plotdat <-
+        cbind(data.frame(pop = df %>%
+                           dplyr::select(combo), plda$x),
+              subset_f)
+      
+      centroids <- aggregate(cbind(LD1, LD2) ~ combo, plotdat, mean)
+    }
     
     return(list(plotdat, prop.lda, load_dat, centroids, spoke_scale_factor))
   }
 
 
 make_lda_plot <-
-  function(d, vjust, xlim = NA, ylim = NA) {
+  function(d,
+           vjust,
+           xlim = NA,
+           ylim = NA) {
     # This function..
     
     genotype_colors <-
@@ -152,26 +175,129 @@ make_lda_plot <-
       ) +
       
       # Facet according to phenotypic measure grouping (subset_f)
-      facet_grid(
-        . ~ subset_f,
-        switch = "y",
-        # Parse label name
-        labeller = as_labeller(effect_names, label_parsed)
-      ) +
+      facet_grid(. ~ subset_f,
+                 switch = "y",
+                 # Parse label name
+                 labeller = as_labeller(effect_names, label_parsed)) +
       
       guides(text = FALSE,
              spoke = FALSE,
              length = FALSE) +
-      theme(legend.title = element_blank(),
-            legend.position = "none",
-            legend.text.align = 0)
-
-    if(!(is.na(xlim))){
+      theme(
+        legend.title = element_blank(),
+        legend.position = "none",
+        legend.text.align = 0
+      )
+    
+    if (!(is.na(xlim))) {
       gg <- gg + xlim(-xlim, xlim)
     }
-    if(!(is.na(ylim))){
+    if (!(is.na(ylim))) {
       gg <- gg + ylim(ylim)
-      }
+    }
+    
+    
+    return(gg)
+    
+  }
+
+
+make_lda_plot_for_all_combos <-
+  function(d,
+           vjust,
+           xlim = NA,
+           ylim = NA) {
+    # This function..
+    
+    genotype_colors <-
+      c("#d7301f","#d7301f90","#d7301f80","#d7301f70","#d7301f60",
+        "#fc8d59","#fc8d5990","#fc8d5980","#fc8d5970","#fc8d5960",
+        "#3690c0","#3690c090","#3690c080","#3690c070","#3690c060")
+    
+    G11 <- parse(text = "paste(G11[R])")
+    G2 <- parse(text = "paste(G2[R])")
+    G5 <- "G5"
+    
+    gg <-
+      ggplot(d[[1]], aes(LD1, LD2)) +
+      theme_cowplot() +
+      geom_point(
+        aes(
+          fill = as.factor(combo),
+          color = as.factor(combo),
+          shape = as.factor(combo)
+        ),
+        size = 5,
+        data = d[[4]]
+      ) +
+      geom_point(aes(color = as.factor(combo),
+                     shape = as.factor(combo)), size = 2.5) +
+      scale_color_manual(name = "Combo",
+                         labels = c(rep(G11,5), rep(G2,5), rep(G5,5)),
+                         values = genotype_colors) +
+      scale_fill_manual(name = "Combo",
+                        labels = c(rep(G11,5), rep(G2,5), rep(G5,5)),
+                        values = genotype_colors) +
+      scale_shape_manual(
+        name = "Combo",
+        labels = c(rep(G11,5), rep(G2,5), rep(G5,5)),
+        values = c(rep(23,5), rep(24,5), rep(21,5))
+      ) +
+      labs(
+        x = paste("LD1 (", percent(d[[2]][1]), ")", sep = ""),
+        y = paste("LD2 (", percent(d[[2]][2]), ")", sep = "")
+      ) +
+      labs(colour = "Site") +
+      geom_spoke(
+        aes(
+          x_start,
+          y_start,
+          angle = angle,
+          radius = log10(length) * d[[5]]
+        ),
+        d[[3]],
+        color = "gray",
+        size = 0.5,
+        show.legend = FALSE
+      ) +
+      geom_label(
+        aes(
+          y = y_end,
+          x = x_end,
+          label = short_parse,
+          hjust = h_just,
+          vjust = v_just
+        ),
+        #can change alpha=length within aes
+        d[[3]],
+        alpha = 0.6,
+        size = 3,
+        colour = "black",
+        show.legend = FALSE,
+        parse = TRUE
+      ) +
+      
+      # Facet according to phenotypic measure grouping (subset_f)
+      facet_grid(. ~ subset_f,
+                 switch = "y",
+                 # Parse label name
+                 labeller = as_labeller(effect_names, label_parsed)) +
+      
+      guides(text = FALSE,
+             spoke = FALSE,
+             length = FALSE) +
+      theme(
+        legend.title = element_blank(),
+        legend.position = "none",
+        legend.text.align = 0
+      )
+    
+    if (!(is.na(xlim))) {
+      gg <- gg + xlim(-xlim, xlim)
+    }
+    if (!(is.na(ylim))) {
+      gg <- gg + ylim(ylim)
+    }
     
     
     return(gg)
@@ -194,7 +320,7 @@ gather_lda_plots <-
                        "trt"),
         subset = "Growth",
         leave_out_indicator = c(1, 1, 1, 1, 0),
-        v_just = c(1,0,1,0.5,0.5),
+        v_just = c(1, 0, 1, 0.5, 0.5),
         spoke_scale_factor = 4
       )
     
@@ -224,9 +350,23 @@ gather_lda_plots <-
         leave_out_indicator = c(1, 1, 1, 1, 1,
                                 0, 1, 1, 1, 1,
                                 1, 1, 1, 1, 0),
-        v_just = c(0.5,0.5,0.5,0.5,0.5,
-                   0.5,0.5,0.5,0.5,0.5,
-                   0.5,0.5,0.5,0.5,0.5),
+        v_just = c(
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ),
         spoke_scale_factor = 4
       )
     
@@ -246,14 +386,17 @@ gather_lda_plots <-
         subset = "Instantaneous",
         leave_out_indicator = c(1, 1, 1, 1,
                                 1, 1, 0),
-        v_just = c(0.5,1,1,0,
-                   0.5,0.5,0.5),
+        v_just = c(0.5, 1, 1, 0,
+                   0.5, 0.5, 0.5),
         spoke_scale_factor = 4
       )
     
-    leg <- g_legend(make_lda_plot(d1) + theme(legend.position = "right",
-                                              # Spread out legend keys a little bit more
-                                              legend.key.size = unit(0.7, "cm")))
+    leg <-
+      g_legend(make_lda_plot(d1) + theme(
+        legend.position = "right",
+        # Spread out legend keys a little bit more
+        legend.key.size = unit(0.7, "cm")
+      ))
     
     # Plot two subplots in appropriate widths
     gd <-
@@ -280,4 +423,121 @@ gather_lda_plots <-
     }
   }
 
-gather_lda_plots()
+
+gather_lda_plots_combos <-
+  function(outfile = NA) {
+    # This function gathers and writes (if indicated) LDA ordination plots
+    
+    # Growth subset
+    d1 <-
+      prepare_lda_data(
+        infile = "data/all_plants_clean.csv",
+        responses =  c("urgr",
+                       "uH",
+                       "max_rgr",
+                       "max_H"),
+        subset = "Growth",
+        leave_out_indicator = c(1, 1, 1, 1),
+        v_just = c(1, 0, 1, 0.5),
+        spoke_scale_factor = 4,
+        by_geno = F
+      )
+    
+    # Cumulative subset
+    d2 <-
+      prepare_lda_data(
+        infile = "data/biomass_plants_clean.csv",
+        responses =  c(
+          "ssa",
+          "srl",
+          "SLA",
+          "Rv",
+          "Rt",
+          "Rsa_la",
+          "Rsa",
+          "Rl",
+          "Rd",
+          #"LA",
+          "DMCv",
+          "DMCr",
+          "Bv",
+          "Br",
+          "A_B"
+        ),
+        subset = "Cumulative",
+        leave_out_indicator = c(1, 1, 1, 1, 1,
+                                0, 1, 1, 1, 1,
+                                1, 1, 1, 1),
+        v_just = c(
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ),
+        spoke_scale_factor = 4,
+        by_geno = F
+      )
+    
+    # Instantaneous subset
+    d3 <-
+      prepare_lda_data(
+        infile = "data/phys_plants_clean.csv",
+        responses =  c("uWUEi",
+                       "ugs",
+                       "ufv",
+                       "uAnet",
+                       "max_WUEi",
+                       #"max_gs",
+                       "max_fv"
+                       #"max_Anet"
+                       ),
+        subset = "Instantaneous",
+        leave_out_indicator = c(1, 1, 1, 1,
+                                1, 1),
+        v_just = c(0.5, 1, 1, 0,
+                   0.5, 0.5),
+        spoke_scale_factor = 4,
+        by_geno = F
+      )
+    
+    leg <-
+      g_legend(make_lda_plot(d1) + theme(
+        legend.position = "right",
+        # Spread out legend keys a little bit more
+        legend.key.size = unit(0.7, "cm")
+      ))
+    
+    # Plot two subplots in appropriate widths
+    gd <-
+      plot_grid(
+        make_lda_plot_for_all_combos(d1),
+        make_lda_plot_for_all_combos(d3),
+        make_lda_plot_for_all_combos(d2, xlim = 6),
+        leg,
+        nrow = 1,
+        rel_widths = c(1, 1, 1, 0.2),
+        labels = c("(a)", "(b)", "(c)", "")
+      )
+    
+    # Write file or return gridded plot
+    if (is.na(outfile)) {
+      return(gd)
+    } else {
+      ggsave(
+        plot = gd,
+        filename = outfile,
+        height = 5,
+        width = 15
+      )
+    }
+  }

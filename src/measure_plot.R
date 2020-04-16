@@ -196,7 +196,9 @@ make_breakpoint_plot <-
     # Read in data
     df <- clean_breakpoint_data_for_plotting()
     
-    # Make a reordered factor to order facets
+    # Make a reordered factor to order facets, but DROP recovery for now
+    df <- 
+      df %>% dplyr::filter(subset != "Recovery")
     df$facet_left_f = factor(df$subset,
                              levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
     
@@ -234,6 +236,7 @@ make_breakpoint_plot <-
         facet_left_f ~ facet_geno,
         scales = "free",
         space = "free",
+        switch = "y",
         labeller = label_parsed
       ) +
       
@@ -258,7 +261,6 @@ make_breakpoint_plot <-
       theme(
         legend.position = "none",
         axis.title.y = element_text(color = "transparent"),
-        strip.text.y = element_blank(),
         strip.placement = "outside",
         axis.text.x = element_text(color = "transparent"),
         axis.ticks.x = element_line(color = "transparent")
@@ -295,3 +297,6 @@ make_fig_effects <-
       )
     }
   }
+
+
+make_breakpoint_plot()
