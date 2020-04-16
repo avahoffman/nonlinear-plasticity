@@ -59,8 +59,8 @@ clean_posterior_data_for_plotting <-
 
 
 make_effect_plot <-
-  function() {
-    # This function makes the effect plots for treatment (general) and each pairwise comparison
+  function(genotype_comparison = F) {
+    # This function makes the effect plots for treatment (general) OR each pairwise comparison
     # for the different genotypes
     
     effect_names <- c(
@@ -76,18 +76,23 @@ make_effect_plot <-
     )
     
     # Gather each subset of data depending on the param / effect desired for plotting
-    trt_data <- clean_posterior_data_for_plotting("trt_effect")
-    geno_data1 <- clean_posterior_data_for_plotting("G11[R]-G2[R]")
-    geno_data2 <- clean_posterior_data_for_plotting("G11[R]-G5")
-    geno_data3 <- clean_posterior_data_for_plotting("G2[R]-G5")
-    int_data <- clean_posterior_data_for_plotting("int_effect")
-    df <- rbind(trt_data, geno_data1, geno_data2, geno_data3)
+     if(!(genotype_comparison)){
+       df <- clean_posterior_data_for_plotting("trt_effect")
+       weak_effect_color <- no_effect_color # No weak effects, so replace that color with none
+     } else {
+       geno_data1 <- clean_posterior_data_for_plotting("G11[R]-G2[R]")
+       geno_data2 <- clean_posterior_data_for_plotting("G11[R]-G5")
+       geno_data3 <- clean_posterior_data_for_plotting("G2[R]-G5")
+       df <- rbind(geno_data1, geno_data2, geno_data3)
+     }      
     
     # Make a reordered factor to order facets (top)
     df$param_f = factor(df$param,
                         levels = c('trt_effect', 'G11[R]-G2[R]', 'G11[R]-G5', 'G2[R]-G5'))
     
-    # Make a reordered factor to order facets (left)
+    # Make a reordered factor to order facets (left), but DROP recovery for now
+    df <- 
+      df %>% dplyr::filter(facet_left != "Recovery")
     df$facet_left_f = factor(df$facet_left,
                              levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
     
@@ -271,7 +276,7 @@ make_fig_effects <-
     # Plot two subplots in appropriate widths
     gd <-
       plot_grid(
-        make_effect_plot(),
+        make_effect_plot(genotype_comparison = T),
         make_breakpoint_plot(),
         nrow = 1,
         rel_widths = c(0.7, 0.3),

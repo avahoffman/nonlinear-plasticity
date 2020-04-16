@@ -6,7 +6,8 @@
 prepare_lda_data <-
   function(infile,
            responses,
-           leave_out_indicator) {
+           leave_out_indicator,
+           subset) {
     # This function..
     
     # Read in data
@@ -36,7 +37,7 @@ prepare_lda_data <-
     prop.lda = lda_results$svd ^ 2 / sum(lda_results$svd ^ 2)
     prop.lda
     plda <- predict(object = lda_results, newdata = ldadat)
-
+    
     # Save the loadings
     load_dat <-
       data.frame(varnames = rownames(coef(lda_results)), coef(lda_results))
@@ -44,17 +45,17 @@ prepare_lda_data <-
     load_dat$angle <- atan2(load_dat$LD2, load_dat$LD1)
     load_dat$x_start <- load_dat$y_start <- 0
     load_dat$x_end <-
-      cos(load_dat$angle) * log(load_dat$length) # This sets the length of your lines.
+      cos(load_dat$angle) * log(load_dat$length) * 1.5 # This sets the length of your lines.
     load_dat$y_end <-
-      sin(load_dat$angle) * log(load_dat$length) # This sets the length of your lines.
+      sin(load_dat$angle) * log(load_dat$length) * 1.5 # This sets the length of your lines.
     
     # Data containing full / parse-able names for phenotypic measures
     orders <-
       as.tbl(read.csv("data/measure_order.csv", header = T)) %>%
       dplyr::mutate(varnames = as.character(measure))
-    load_dat <- 
+    load_dat <-
       load_dat %>% left_join(orders, by = "varnames")
-    load_dat <- 
+    load_dat <-
       cbind(load_dat, leave_out_indicator)
     print(load_dat)
     
@@ -65,11 +66,13 @@ prepare_lda_data <-
       mutate(h_just = replace(h_just, x_end >= 0, 0)) %>%
       dplyr::filter(leave_out_indicator != 0)
     
+    subset_f <- rep(subset, nrow(plda$x))
     plotdat <-
-      data.frame(pop = df %>%
-                   dplyr::select(geno), plda$x)
+      cbind(data.frame(pop = df %>%
+                         dplyr::select(geno), plda$x),
+            subset_f)
     
-    centroids <- aggregate(cbind(LD1,LD2)~geno,plotdat,mean)
+    centroids <- aggregate(cbind(LD1, LD2) ~ geno, plotdat, mean)
     
     return(list(plotdat, prop.lda, load_dat, centroids))
   }
@@ -89,14 +92,23 @@ make_lda_plot <-
     gg <-
       ggplot(d[[1]], aes(LD1, LD2)) +
       theme_cowplot() +
+      geom_point(
+        aes(
+          fill = as.factor(geno),
+          color = as.factor(geno),
+          shape = as.factor(geno)
+        ),
+        size = 5,
+        data = d[[4]]
+      ) +
       geom_point(aes(color = as.factor(geno),
                      shape = as.factor(geno)), size = 2.5) +
       scale_color_manual(name = "Genotype",
                          labels = c(G11, G2, G5),
                          values = genotype_colors) +
       scale_fill_manual(name = "Genotype",
-                         labels = c(G11, G2, G5),
-                         values = genotype_colors) +
+                        labels = c(G11, G2, G5),
+                        values = genotype_colors) +
       scale_shape_manual(
         name = "Genotype",
         labels = c(G11, G2, G5),
@@ -108,7 +120,12 @@ make_lda_plot <-
       ) +
       labs(colour = "Site") +
       geom_spoke(
-        aes(x_start, y_start, angle = angle, radius = log(length)),
+        aes(
+          x_start,
+          y_start,
+          angle = angle,
+          radius = log(length) * 1.5
+        ),
         d[[3]],
         color = "gray",
         size = 0.5,
@@ -124,49 +141,49 @@ make_lda_plot <-
         #can change alpha=length within aes
         d[[3]],
         alpha = 0.6,
-        size = 3,
+        size = 2,
         vjust = v_just,
         colour = "black",
         show.legend = FALSE,
         parse = TRUE
       ) +
+      
+      # Facet according to phenotypic measure grouping (subset_f)
+      facet_grid(
+        . ~ subset_f,
+        switch = "y",
+        # Parse label name
+        labeller = as_labeller(effect_names, label_parsed)
+      ) +
+      
       guides(text = FALSE,
              spoke = FALSE,
              length = FALSE) +
-      theme(
-        legend.title = element_blank(),
-        legend.text.align = 0
-        ) + 
-      geom_point(aes(fill = as.factor(geno), 
-                     color = as.factor(geno),
-                     shape = as.factor(geno)), 
-                 size = 3.5,
-                 data = d[[4]])
-  
+      theme(legend.title = element_blank(),
+            legend.position = "none",
+            legend.text.align = 0) 
+    
     
     return(gg)
     
   }
 
 
-gather_lda_plots <- 
-  function(outfile=NA){
+gather_lda_plots <-
+  function(outfile = NA) {
     # This function gathers and writes (if indicated) LDA ordination plots
     
     # Growth subset
     d1 <-
       prepare_lda_data(
         infile = "data/all_plants_clean.csv",
-        responses =  c(
-          "urgr",
-          "uH",
-          "max_rgr",
-          "max_H",
-          "trt"
-        ),
-        leave_out_indicator = c(
-          1,1,1,1,0
-        )
+        responses =  c("urgr",
+                       "uH",
+                       "max_rgr",
+                       "max_H",
+                       "trt"),
+        subset = "Growth",
+        leave_out_indicator = c(1, 1, 1, 1, 0)
       )
     
     # Cumulative subset
@@ -191,33 +208,31 @@ gather_lda_plots <-
           "A_B",
           "trt"
         ),
-        leave_out_indicator = c(
-          1,1,1,1,1,
-          1,1,1,1,1,
-          1,1,1,1,0
-        )
+        subset = "Cumulative",
+        leave_out_indicator = c(1, 1, 1, 1, 1,
+                                1, 1, 1, 1, 1,
+                                1, 1, 1, 1, 0)
       )
     
     # Instantaneous subset
     d3 <-
       prepare_lda_data(
         infile = "data/phys_plants_clean.csv",
-        responses =  c(
-          "uWUEi",
-          "ugs",
-          "ufv",
-          "uAnet",
-          "max_WUEi",
-          #"max_gs",
-          "max_fv",
-          #"max_Anet",
-          "trt"
-        ),
-        leave_out_indicator = c(
-          1,1,1,1,
-          1,1,0
-        )
+        responses =  c("uWUEi",
+                       "ugs",
+                       "ufv",
+                       "uAnet",
+                       "max_WUEi",
+                       #"max_gs",
+                       "max_fv",
+                       #"max_Anet",
+                       "trt"),
+        subset = "Instantaneous",
+        leave_out_indicator = c(1, 1, 1, 1,
+                                1, 1, 0)
       )
+    
+    leg <- g_legend(make_lda_plot(d1) + theme(legend.position = "right"))
     
     # Plot two subplots in appropriate widths
     gd <-
@@ -225,9 +240,10 @@ gather_lda_plots <-
         make_lda_plot(d1),
         make_lda_plot(d3),
         make_lda_plot(d2),
+        leg,
         nrow = 1,
-        rel_widths = c(1,1,1),
-        labels = c("(a)", "(b)", "(c)")
+        rel_widths = c(1, 1, 1, 0.2),
+        labels = c("(a)", "(b)", "(c)", "")
       )
     
     # Write file or return gridded plot
@@ -243,5 +259,3 @@ gather_lda_plots <-
     }
   }
 
-
-gather_lda_plots()
