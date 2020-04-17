@@ -59,7 +59,8 @@ clean_posterior_data_for_plotting <-
 
 
 make_effect_plot <-
-  function(genotype_comparison = F) {
+  function(genotype_comparison = F,
+           recovery = F) {
     # This function makes the effect plots for treatment (general) OR each pairwise comparison
     # for the different genotypes
     
@@ -76,25 +77,33 @@ make_effect_plot <-
     )
     
     # Gather each subset of data depending on the param / effect desired for plotting
-     if(!(genotype_comparison)){
-       df <- clean_posterior_data_for_plotting("trt_effect")
-       weak_effect_color <- no_effect_color # No weak effects, so replace that color with none
-     } else {
-       geno_data1 <- clean_posterior_data_for_plotting("G11[R]-G2[R]")
-       geno_data2 <- clean_posterior_data_for_plotting("G11[R]-G5")
-       geno_data3 <- clean_posterior_data_for_plotting("G2[R]-G5")
-       df <- rbind(geno_data1, geno_data2, geno_data3)
-     }      
+    if (!(genotype_comparison)) {
+      df <- clean_posterior_data_for_plotting("trt_effect")
+      weak_effect_color <-
+        no_effect_color # No weak effects, so replace that color with none
+    } else {
+      geno_data1 <- clean_posterior_data_for_plotting("G11[R]-G2[R]")
+      geno_data2 <- clean_posterior_data_for_plotting("G11[R]-G5")
+      geno_data3 <- clean_posterior_data_for_plotting("G2[R]-G5")
+      df <- rbind(geno_data1, geno_data2, geno_data3)
+    }
     
     # Make a reordered factor to order facets (top)
     df$param_f = factor(df$param,
                         levels = c('trt_effect', 'G11[R]-G2[R]', 'G11[R]-G5', 'G2[R]-G5'))
     
     # Make a reordered factor to order facets (left), but DROP recovery for now
-    df <- 
-      df %>% dplyr::filter(facet_left != "Recovery")
-    df$facet_left_f = factor(df$facet_left,
-                             levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
+    if (!(recovery)) {
+      df <-
+        df %>% dplyr::filter(facet_left != "Recovery")
+      
+      df$facet_left_f = factor(df$facet_left,
+                               levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
+    } else {
+      df <-
+        df %>% dplyr::filter(facet_left == "Recovery")
+      df <- df[(df$measure != "B_total"),]
+    }
     
     # Order full name so it falls alphabetically downward on the y axis
     df_sort <-
@@ -132,15 +141,6 @@ make_effect_plot <-
       # Add general theme
       theme_cowplot() +
       
-      # Facet according to effect type (param_f) and phenotypic measure grouping (facet_left_f)
-      facet_grid(
-        facet_left_f ~ param_f,
-        scales = "free",
-        space = "free",
-        switch = "y",
-        labeller = as_labeller(effect_names, label_parsed)
-      ) +
-      
       # Parse y labels
       scale_y_discrete(breaks = levels(df_sort$short_parse),
                        labels = parse(text = levels(df_sort$short_parse))) +
@@ -157,6 +157,17 @@ make_effect_plot <-
         axis.title.y = element_blank(),
         strip.placement = "outside"
       )
+    
+    # Facet according to effect type (param_f) and phenotypic measure grouping (facet_left_f)
+    if (!(recovery)) {
+      gg <- facet_grid(
+        facet_left_f ~ param_f,
+        scales = "free",
+        space = "free",
+        switch = "y",
+        labeller = as_labeller(effect_names, label_parsed)
+      )
+    }
     
     return(gg)
   }
@@ -197,7 +208,7 @@ make_breakpoint_plot <-
     df <- clean_breakpoint_data_for_plotting()
     
     # Make a reordered factor to order facets, but DROP recovery for now
-    df <- 
+    df <-
       df %>% dplyr::filter(subset != "Recovery")
     df$facet_left_f = factor(df$subset,
                              levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
@@ -251,7 +262,7 @@ make_breakpoint_plot <-
       scale_fill_manual(values = c(breakpoint_pal)) +
       
       # Where it's not linear, add the estimate and percentage symbol
-      geom_text(data = df_sort[(df_sort$Est. != "Linear"),], 
+      geom_text(data = df_sort[(df_sort$Est. != "Linear"),],
                 aes(label = paste(Est., "%", sep = ""))) +
       
       # Where it's linear, just say "Linear"
@@ -299,4 +310,5 @@ make_fig_effects <-
   }
 
 
-make_breakpoint_plot()
+make_effect_plot(genotype_comparison = F,
+           recovery = T)

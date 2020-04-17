@@ -56,10 +56,14 @@ run_breakpoint_analysis()
 make_effect_plot(genotype_comparison = T)
 ggsave(file = "figures/genotype_effects_20VWC.pdf", height = 9, width=10)
 make_effect_plot()
-ggsave(file = "figures/treatment_effects.pdf", height = 9, width=6)
+ggsave(file = "figures/treatment_effects.pdf", height = 7, width=7)
 
 # Plot LDAs ----
 gather_lda_plots(outfile = "figures/genotype_LDAs.pdf")
+
+# Breakpoints
+make_breakpoint_plot()
+ggsave(file = "figures/breakpoints.pdf", height = 7, width = 7)
 
 # Plot phenotypes by treatment ====
 cycle_phenotype_plots()
