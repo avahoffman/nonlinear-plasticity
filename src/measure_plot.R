@@ -92,19 +92,20 @@ make_effect_plot <-
     df$param_f = factor(df$param,
                         levels = c('trt_effect', 'G11[R]-G2[R]', 'G11[R]-G5', 'G2[R]-G5'))
     
-    # Make a reordered factor to order facets (left), but DROP recovery for now
+    # DROP recovery for now
     if (!(recovery)) {
       df <-
         df %>% dplyr::filter(facet_left != "Recovery")
-      
-      df$facet_left_f = factor(df$facet_left,
-                               levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
     } else {
       df <-
         df %>% dplyr::filter(facet_left == "Recovery")
       # Drop total since I didn't really use this in the experimental phase
-      df <- df[(df$measure != "B_total"),]
+      df <- df[(df$measure != "B_total"), ]
     }
+    
+    # Make a reordered factor to order facets (left)
+    df$facet_left_f = factor(df$facet_left,
+                             levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
     
     # Order full name so it falls alphabetically downward on the y axis
     df_sort <-
@@ -161,15 +162,25 @@ make_effect_plot <-
     
     # Facet according to effect type (param_f) and phenotypic measure grouping (facet_left_f)
     if (!(recovery)) {
-      gg <- 
+      gg <-
         gg +
         facet_grid(
-        facet_left_f ~ param_f,
-        scales = "free",
-        space = "free",
-        switch = "y",
-        labeller = as_labeller(effect_names, label_parsed)
-      )
+          facet_left_f ~ param_f,
+          scales = "free",
+          space = "free",
+          switch = "y",
+          labeller = as_labeller(effect_names, label_parsed)
+        )
+    } else {
+      gg <-
+        gg +
+        facet_grid(
+          . ~ param_f,
+          scales = "free",
+          space = "free",
+          switch = "y",
+          labeller = as_labeller(effect_names, label_parsed)
+        )
     }
     
     return(gg)
@@ -210,19 +221,21 @@ make_breakpoint_plot <-
     # Read in data
     df <- clean_breakpoint_data_for_plotting()
     
-    # Make a reordered factor to order facets, but DROP recovery for now
+    # DROP recovery for now
     if (!(recovery)) {
-    df <-
-      df %>% dplyr::filter(subset != "Recovery")
-    df$facet_left_f = factor(df$subset,
-                             levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
+      df <-
+        df %>% dplyr::filter(subset != "Recovery")
     } else {
       df <-
         df %>% dplyr::filter(subset == "Recovery")
       breakpoint_pal <- c(colfunc(5), '#fdd49e')
       # Drop total since I didn't really use this in the experimental phase
-      df <- df[(df$measure != "B_total"),]
+      df <- df[(df$measure != "B_total"), ]
     }
+    
+    # Make a reordered factor to order facets
+    df$facet_left_f = factor(df$subset,
+                             levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
     
     # Make a reordered factor to order facets
     df$facet_geno = factor(df$geno,
@@ -264,11 +277,11 @@ make_breakpoint_plot <-
       scale_fill_manual(values = c(breakpoint_pal)) +
       
       # Where it's not linear, add the estimate and percentage symbol
-      geom_text(data = df_sort[(df_sort$Est. != "Linear"),],
+      geom_text(data = df_sort[(df_sort$Est. != "Linear"), ],
                 aes(label = paste(Est., "%", sep = ""))) +
       
       # Where it's linear, just say "Linear"
-      geom_text(data = df_sort[(df_sort$Est. == "Linear"),], aes(label = Est.)) +
+      geom_text(data = df_sort[(df_sort$Est. == "Linear"), ], aes(label = Est.)) +
       
       # Remove labels, gridlines, etc
       theme(
@@ -280,16 +293,26 @@ make_breakpoint_plot <-
       )
     
     # Facet according to genotype and phenotypic measure grouping (facet_left_f)
-    if(!(recovery)){
-    gg <- 
-      gg +
-      facet_grid(
-      facet_left_f ~ facet_geno,
-      scales = "free",
-      space = "free",
-      switch = "y",
-      labeller = label_parsed
-    )
+    if (!(recovery)) {
+      gg <-
+        gg +
+        facet_grid(
+          facet_left_f ~ facet_geno,
+          scales = "free",
+          space = "free",
+          switch = "y",
+          labeller = label_parsed
+        )
+    } else {
+      gg <-
+        gg +
+        facet_grid(
+          . ~ facet_geno,
+          scales = "free",
+          space = "free",
+          switch = "y",
+          labeller = label_parsed
+        )
     }
     
     return(gg)
@@ -323,6 +346,3 @@ make_fig_effects <-
       )
     }
   }
-
-
-make_breakpoint_plot(recovery = T)

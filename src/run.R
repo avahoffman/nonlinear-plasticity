@@ -65,6 +65,10 @@ gather_lda_plots(outfile = "figures/genotype_LDAs.pdf")
 make_breakpoint_plot()
 ggsave(file = "figures/breakpoints.pdf", height = 7, width = 7)
 
+# Recovery effects
+make_effect_plot(recovery = T)
+ggsave(file = "figures/recovery_trt.pdf", height = 4, width=7)
+
 # Plot phenotypes by treatment ====
 cycle_phenotype_plots()
 growth_summary()
