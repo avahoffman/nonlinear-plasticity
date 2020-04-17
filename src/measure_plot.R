@@ -102,6 +102,7 @@ make_effect_plot <-
     } else {
       df <-
         df %>% dplyr::filter(facet_left == "Recovery")
+      # Drop total since I didn't really use this in the experimental phase
       df <- df[(df$measure != "B_total"),]
     }
     
@@ -160,7 +161,9 @@ make_effect_plot <-
     
     # Facet according to effect type (param_f) and phenotypic measure grouping (facet_left_f)
     if (!(recovery)) {
-      gg <- facet_grid(
+      gg <- 
+        gg +
+        facet_grid(
         facet_left_f ~ param_f,
         scales = "free",
         space = "free",
@@ -201,17 +204,25 @@ clean_breakpoint_data_for_plotting <-
 
 
 make_breakpoint_plot <-
-  function() {
+  function(recovery = F) {
     # This function makes the breakpoint plots for the different genotypes
     
     # Read in data
     df <- clean_breakpoint_data_for_plotting()
     
     # Make a reordered factor to order facets, but DROP recovery for now
+    if (!(recovery)) {
     df <-
       df %>% dplyr::filter(subset != "Recovery")
     df$facet_left_f = factor(df$subset,
                              levels = c('Growth', 'Instantaneous', 'Cumulative', 'Recovery'))
+    } else {
+      df <-
+        df %>% dplyr::filter(subset == "Recovery")
+      breakpoint_pal <- c(colfunc(5), '#fdd49e')
+      # Drop total since I didn't really use this in the experimental phase
+      df <- df[(df$measure != "B_total"),]
+    }
     
     # Make a reordered factor to order facets
     df$facet_geno = factor(df$geno,
@@ -242,15 +253,6 @@ make_breakpoint_plot <-
       # "Heatmap" style
       geom_tile() +
       
-      # Facet according to genotype and phenotypic measure grouping (facet_left_f)
-      facet_grid(
-        facet_left_f ~ facet_geno,
-        scales = "free",
-        space = "free",
-        switch = "y",
-        labeller = label_parsed
-      ) +
-      
       # X Axis label
       xlab("Breakpoint estimate") +
       
@@ -276,6 +278,19 @@ make_breakpoint_plot <-
         axis.text.x = element_text(color = "transparent"),
         axis.ticks.x = element_line(color = "transparent")
       )
+    
+    # Facet according to genotype and phenotypic measure grouping (facet_left_f)
+    if(!(recovery)){
+    gg <- 
+      gg +
+      facet_grid(
+      facet_left_f ~ facet_geno,
+      scales = "free",
+      space = "free",
+      switch = "y",
+      labeller = label_parsed
+    )
+    }
     
     return(gg)
   }
@@ -310,5 +325,4 @@ make_fig_effects <-
   }
 
 
-make_effect_plot(genotype_comparison = F,
-           recovery = T)
+make_breakpoint_plot(recovery = T)
