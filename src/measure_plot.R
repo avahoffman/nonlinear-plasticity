@@ -77,12 +77,16 @@ make_effect_plot <-
     )
     
     # Gather each subset of data depending on the param / effect desired for plotting
+    # Divide up so that treatment effects can be plotted separately from geno effects
     if (!(genotype_comparison)) {
+      # Get treatment data only
       df <- clean_posterior_data_for_plotting("trt_effect")
       weak_effect_color <-
         no_effect_color # No weak effects, so replace that color with none
     } else {
-      geno_data1 <- clean_posterior_data_for_plotting("G11[R]-G2[R]")
+      # Get geno data only
+      geno_data1 <-
+        clean_posterior_data_for_plotting("G11[R]-G2[R]")
       geno_data2 <- clean_posterior_data_for_plotting("G11[R]-G5")
       geno_data3 <- clean_posterior_data_for_plotting("G2[R]-G5")
       df <- rbind(geno_data1, geno_data2, geno_data3)
@@ -92,15 +96,17 @@ make_effect_plot <-
     df$param_f = factor(df$param,
                         levels = c('trt_effect', 'G11[R]-G2[R]', 'G11[R]-G5', 'G2[R]-G5'))
     
-    # DROP recovery for now
     if (!(recovery)) {
+      # DROP recovery
       df <-
         df %>% dplyr::filter(facet_left != "Recovery")
     } else {
+      # OR, only look at recovery
       df <-
         df %>% dplyr::filter(facet_left == "Recovery")
+      
       # Drop total since I didn't really use this in the experimental phase
-      df <- df[(df$measure != "B_total"), ]
+      df <- df[(df$measure != "B_total"),]
     }
     
     # Make a reordered factor to order facets (left)
@@ -162,8 +168,11 @@ make_effect_plot <-
     
     # Facet according to effect type (param_f) and phenotypic measure grouping (facet_left_f)
     if (!(recovery)) {
+      # Keep left facet if it's not recovery, since it's useful
       gg <-
         gg +
+        
+        # Add facets
         facet_grid(
           facet_left_f ~ param_f,
           scales = "free",
@@ -172,8 +181,11 @@ make_effect_plot <-
           labeller = as_labeller(effect_names, label_parsed)
         )
     } else {
+      # The left facet just says recovery for these, it's not really helpful
       gg <-
         gg +
+        
+        # Add facets
         facet_grid(
           . ~ param_f,
           scales = "free",
@@ -221,16 +233,17 @@ make_breakpoint_plot <-
     # Read in data
     df <- clean_breakpoint_data_for_plotting()
     
-    # DROP recovery for now
     if (!(recovery)) {
+      # DROP recovery for now
       df <-
         df %>% dplyr::filter(subset != "Recovery")
     } else {
+      # OR only look at recovery
       df <-
         df %>% dplyr::filter(subset == "Recovery")
       breakpoint_pal <- c(colfunc(5), '#fdd49e')
       # Drop total since I didn't really use this in the experimental phase
-      df <- df[(df$measure != "B_total"), ]
+      df <- df[(df$measure != "B_total"),]
     }
     
     # Make a reordered factor to order facets
@@ -277,11 +290,11 @@ make_breakpoint_plot <-
       scale_fill_manual(values = c(breakpoint_pal)) +
       
       # Where it's not linear, add the estimate and percentage symbol
-      geom_text(data = df_sort[(df_sort$Est. != "Linear"), ],
+      geom_text(data = df_sort[(df_sort$Est. != "Linear"),],
                 aes(label = paste(Est., "%", sep = ""))) +
       
       # Where it's linear, just say "Linear"
-      geom_text(data = df_sort[(df_sort$Est. == "Linear"), ], aes(label = Est.)) +
+      geom_text(data = df_sort[(df_sort$Est. == "Linear"),], aes(label = Est.)) +
       
       # Remove labels, gridlines, etc
       theme(
@@ -294,8 +307,11 @@ make_breakpoint_plot <-
     
     # Facet according to genotype and phenotypic measure grouping (facet_left_f)
     if (!(recovery)) {
+      # Keep left facet if it's not recovery, since it's useful
       gg <-
         gg +
+        
+        # Add facets
         facet_grid(
           facet_left_f ~ facet_geno,
           scales = "free",
@@ -304,8 +320,11 @@ make_breakpoint_plot <-
           labeller = label_parsed
         )
     } else {
+      # Facets not super useful on lefthand side since it's just recovery
       gg <-
         gg +
+        
+        # Add facets
         facet_grid(
           . ~ facet_geno,
           scales = "free",
