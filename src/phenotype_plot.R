@@ -8,60 +8,93 @@ library(dplyr)
 
 make_phenotype_plot <-
   function(measure_, return_plot = T) {
+    # This function gathers the posterior intervals and plots treatment on the x axis,
+    # phenotype on the y axis, and displays different colors and shapes for the different
+    # genotypes
+    
     df <-
+      # Read posteriors
       read.csv("output/posterior_output.csv", header = T) %>%
+      
       # Gather parsed names for axis label
       full_join(read.csv("data/measure_order.csv"),
                 header = T,
                 by = "measure") %>%
+      # Only interested in 95% CI
       dplyr::filter(measure == measure_ &
                       param == "posterior value")
     
-    
+    # Replace 30 with Saturated - 30 isn't really accurate
     df$trt <- as.numeric(as.character(gsub("Sat'd", 30, df$trt)))
+    
+    # Make name parse-able
     df$parse_name <- as.character(df$parse_name)
+    
+    # Facet Saturated since it's really a seperate kind of treatment
     facet <- c(1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2)
     df <- cbind(df, facet)
     
+    # Genotype names
     G11 <- parse(text = "paste(G11[R])")
     G2 <- parse(text = "paste(G2[R])")
     G5 <- "G5"
     
+    # Genotype colors
     genotype_colors <-
       c("#d7301f", "#fc8d59", "#3690c0")
     
     
     gg <-
+      # Make plot
       ggplot(data = df, aes(x = trt, y = mean, color = geno)) +
+      
+      # General theme
       theme_cowplot() +
+      
+      # Error bars (with width since the overlap somewhat)
       geom_errorbar(aes(ymin = `X2.50.`, ymax = `X97.50.`), width = 2) +
+      
+      # Connect treatments (except saturated treatment)
       geom_line() +
+      
+      # Points at mean
       geom_point(aes(shape = geno, color = geno),
                  size = 4,
                  fill = "white") +
+      
+      # Label axes with treatment and phenotype
       xlab("% VWC") +
       ylab(parse(text = df$parse_name[1])) +
+      
+      # Custom names for treatments
       scale_x_continuous(
         breaks = c(10, 15, 20, 25, 30),
         labels = c("10", "15", "20", "25", "Sat'd")
       ) +
+      
+      # Facet Sat'd treatment
       facet_grid(. ~ facet, scales = "free", space = "free") +
+      
+      # Custom genotype colors
       scale_color_manual(name = "Genotype",
                          labels = c(G11, G2, G5),
                          values = genotype_colors) +
+      
+      # Custom genotype shapes
       scale_shape_manual(
         name = "Genotype",
         labels = c(G11, G2, G5),
         values = c(23, 24, 21)
       ) +
+      
+      # No need to label facets, title legend
       theme(
         strip.text = element_blank(),
         legend.title = element_blank(),
         legend.text.align = 0,
         legend.direction = "vertical",
-        legend.position = element_blank()
-      ) +
-      theme(legend.position = "right")
+        legend.position = "right"
+      )
     
     if (!(return_plot)) {
       ggsave(
@@ -125,6 +158,7 @@ cycle_phenotype_plots <-
   }
 
 
+# This is the legend for the genotypes that's applicable to all the figures
 leg <-
   g_legend(make_phenotype_plot("Bv") + theme(legend.margin = margin(l = 0.6, unit =
                                                                       'cm')))
@@ -159,10 +193,7 @@ growth_summary <-
     ggsave(
       gridExtra::grid.arrange(
         grid,
-        geno_legend(make_phenotype_plot("Bv") + theme(legend.margin = margin(
-          l = 0.6, unit =
-            'cm'
-        ))),
+        leg,
         nrow = 1,
         widths = c(7, 1)
       ),
@@ -211,10 +242,7 @@ instantaneous_summary <-
     ggsave(
       gridExtra::grid.arrange(
         grid,
-        geno_legend(make_phenotype_plot("Bv") + theme(legend.margin = margin(
-          l = 0.6, unit =
-            'cm'
-        ))),
+        leg,
         nrow = 1,
         widths = c(10, 1)
       ),
@@ -279,10 +307,7 @@ cumulative_summary <-
     ggsave(
       gridExtra::grid.arrange(
         grid,
-        geno_legend(make_phenotype_plot("Bv") + theme(legend.margin = margin(
-          l = 0.6, unit =
-            'cm'
-        ))),
+        leg,
         nrow = 1,
         widths = c(10, 1)
       ),
@@ -333,10 +358,7 @@ recovery_summary <-
     ggsave(
       gridExtra::grid.arrange(
         grid,
-        geno_legend(make_phenotype_plot("Bv") + theme(legend.margin = margin(
-          l = 0.6, unit =
-            'cm'
-        ))),
+        leg,
         nrow = 1,
         widths = c(10, 1)
       ),
