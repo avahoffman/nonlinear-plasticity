@@ -230,7 +230,7 @@ do_measure_mcmc_sampling <-
     run_measure_model(comp_gamma, response = "Br")
     run_measure_model(comp_gamma, response = "DMCv")
     run_measure_model(comp_gamma, response = "DMCr")
-    run_measure_model(comp_gamma, response = "A_B")
+    run_measure_model(comp_gamma, response = "B_A")
     run_measure_model(comp_gamma, response = "SLA")
     run_measure_model(comp_gamma, response = "LA")
     run_measure_model(comp_gamma, response = "Rl")
@@ -286,23 +286,6 @@ do_measure_mcmc_sampling <-
     
     # Recovery
     # RGR is sometimes negative, use normal model
-    # run_measure_model(comp_gamma,
-    #                   infile = "data/recovery_plants_clean.csv",
-    #                   response = "Bv",
-    #                   recovery = T)
-    # run_measure_model(comp_flower,
-    #                   infile = "data/recovery_plants_clean.csv",
-    #                   response = "Bf",
-    #                   recovery = T,
-    #                   iter = 10000)
-    # run_measure_model(comp_gamma,
-    #                   infile = "data/recovery_plants_clean.csv",
-    #                   response = "Br",
-    #                   recovery = T)
-    # run_measure_model(comp_gamma,
-    #                   infile = "data/recovery_plants_clean.csv",
-    #                   response = "Brh",
-    #                   recovery = T)
     run_measure_model(comp_gamma,
                       infile = "data/recovery_plants_clean.csv",
                       response = "B_above",
@@ -317,7 +300,7 @@ do_measure_mcmc_sampling <-
                       recovery = T)
     run_measure_model(comp_gamma,
                       infile = "data/recovery_plants_clean.csv",
-                      response = "A_B",
+                      response = "B_A",
                       recovery = T)
     run_measure_model(comp_gamma,
                       infile = "data/recovery_plants_clean.csv",

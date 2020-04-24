@@ -15,8 +15,8 @@ clean_biomass_data <-
     
     for (measure in 9:23) {
       d <- df[, measure]
-      d[outliers::scores(na.omit(d), prob = 0.99) == 1] <-
-        mean(d[outliers::scores(na.omit(d), prob = 0.99) == 0])
+      # d[outliers::scores(na.omit(d), prob = 0.995) == 1] <-
+      #   mean(d[outliers::scores(na.omit(d), prob = 0.99) == 0])
       df[, measure] <- d
     }
     
@@ -253,8 +253,8 @@ clean_recovery_data <-
     
     for (measure in 11:30) {
       d <- df[, measure]
-      d[outliers::scores(na.omit(d), prob = 0.999) == 1] <-
-        mean(d[outliers::scores(na.omit(d), prob = 0.999) == 0])
+      # d[outliers::scores(na.omit(d), prob = 0.999) == 1] <-
+      #   mean(d[outliers::scores(na.omit(d), prob = 0.999) == 0])
       df[, measure] <- d
     }
     

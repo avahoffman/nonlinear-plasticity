@@ -23,6 +23,7 @@ source("src/theta_model.R")
 source("src/measure_plot.R")
 source("src/breakpoint_analysis.R")
 source("src/phenotype_plot.R")
+source("src/lda.R")
 
 
 ###########################################################################################

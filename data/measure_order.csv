@@ -15,7 +15,7 @@ Bv,Cumulative,"Biomass, aboveground","paste(""Biomass, aboveground (g)"")","past
 Br,Cumulative,"Biomass, belowground","paste(""Biomass, belowground (g)"")","paste('Biomass, belowground')"
 DMCv,Cumulative,LDMC,"paste(""LDMC (g "",g^-1,"")"")",paste('LDMC')
 DMCr,Cumulative,RDMC,"paste(""RDMC (g "",g^-1,"")"")",paste('RDMC')
-A_B,Cumulative,"Biomass, above:below ratio","paste(""Biomass, above:below ratio"")","paste('Biomass, above:below ratio')"
+B_A,Cumulative,Root:shoot ratio,"paste(""Root:shoot ratio"")",paste('Root:shoot ratio')
 SLA,Cumulative,SLA,"paste(""SLA ("",cm^2,"" "",g^-1,"")"")",paste('SLA')
 LA,Cumulative,LA,"paste(""LA ("",cm^2,"")"")",paste('LA')
 Rl,Cumulative,Root length,"paste(""Root length (mm)"")",paste('Root length')
@@ -29,7 +29,7 @@ ssa,Cumulative,Specific root area,"paste(""Specific root area ("",mm^2,"" "",g^-
 B_above_recovery,Recovery,"Biomass, aboveground","paste(""Biomass, aboveground (g)"")","paste('Biomass, aboveground')"
 B_below_recovery,Recovery,"Biomass, belowground","paste(""Biomass, belowground (g)"")","paste('Biomass, belowground')"
 B_total_recovery,Recovery,"Biomass, total","paste(""Biomass, total (g)"")","paste('Biomass, total')"
-A_B_recovery,Recovery,"Biomass, above:below ratio","paste(""Biomass, above:below ratio"")","paste('Biomass, above:below ratio')"
+B_A_recovery,Recovery,Root:shoot ratio,"paste(""Root:shoot ratio"")",paste('Root:shoot ratio')
 uH_recovery,Recovery,Height (mean),"paste(""Mean height (cm)"")",paste('Height (mean)')
 urgr_recovery,Recovery,Relative growth rate (mean),"paste(""Mean relative growth rate (ln(cm) "",week^-1,"")"")",paste('Relative growth rate (mean)')
 max_H_recovery,Recovery,Height (max.),"paste(""Max. height (cm)"")",paste('Height (max.)')
