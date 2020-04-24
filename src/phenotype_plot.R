@@ -121,7 +121,7 @@ cycle_phenotype_plots <-
       "B_total_recovery",
       "B_below_recovery",
       "B_above_recovery",
-      "A_B_recovery",
+      "B_A_recovery",
       "ssa",
       "srl",
       "SLA",
@@ -136,7 +136,7 @@ cycle_phenotype_plots <-
       "DMCr",
       "Bv",
       "Br",
-      "A_B",
+      "B_A",
       "uWUEi",
       "ugs",
       "ufv",
@@ -271,7 +271,7 @@ cumulative_summary <-
       "DMCr",
       "Bv",
       "Br",
-      "A_B"
+      "B_A"
     )
     
     p <- list()
@@ -329,7 +329,7 @@ recovery_summary <-
       "B_total_recovery",
       "B_below_recovery",
       "B_above_recovery",
-      "A_B_recovery"
+      "B_A_recovery"
     )
     
     p <- list()
