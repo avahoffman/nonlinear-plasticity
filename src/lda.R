@@ -1,6 +1,7 @@
 ###########################################################################################
 ## CODE TO PERFORM LDA TO EXAMINE DIFFERENCES BETWEEN GENOTYPES
 ###########################################################################################
+library(scales)
 
 
 prepare_lda_data <-
@@ -207,7 +208,13 @@ make_lda_plot_for_all_combos <-
            vjust,
            xlim = NA,
            ylim = NA) {
-    # This function..
+    # This function plots not only the LDA differentiation genotype, but treatment ALSO!
+    
+    effect_names <- c(
+      `Growth` = "Growth",
+      `Instantaneous` = "Instantaneous",
+      `Cumulative` = "Cumulative"
+    )
     
     genotype_colors <-
       c("#d7301f","#d7301f90","#d7301f80","#d7301f70","#d7301f60",
@@ -296,7 +303,7 @@ make_lda_plot_for_all_combos <-
       gg <- gg + xlim(-xlim, xlim)
     }
     if (!(is.na(ylim))) {
-      gg <- gg + ylim(ylim)
+      gg <- gg + ylim(-ylim, ylim)
     }
     
     
@@ -343,7 +350,7 @@ gather_lda_plots <-
           "DMCr",
           "Bv",
           "Br",
-          "A_B",
+          "B_A",
           "trt"
         ),
         subset = "Cumulative",
@@ -352,19 +359,19 @@ gather_lda_plots <-
                                 1, 1, 1, 1, 0),
         v_just = c(
           0.5,
+          0,
           0.5,
           0.5,
           0.5,
           0.5,
+          0,
+          0.5,
+          1,
           0.5,
           0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
+          1,
+          1,
+          0,
           0.5
         ),
         spoke_scale_factor = 4
@@ -403,7 +410,7 @@ gather_lda_plots <-
       plot_grid(
         make_lda_plot(d1),
         make_lda_plot(d3),
-        make_lda_plot(d2, xlim = 6),
+        make_lda_plot(d2, xlim = 7),
         leg,
         nrow = 1,
         rel_widths = c(1, 1, 1, 0.2),
@@ -462,7 +469,7 @@ gather_lda_plots_combos <-
           "DMCr",
           "Bv",
           "Br",
-          "A_B"
+          "B_A"
         ),
         subset = "Cumulative",
         leave_out_indicator = c(1, 1, 1, 1, 1,
@@ -541,3 +548,4 @@ gather_lda_plots_combos <-
       )
     }
   }
+
