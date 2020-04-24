@@ -22,21 +22,30 @@ get_breakpoints <-
         fit,
         seg.Z = ~ trt,
         # Starting point is 22 %VWC according to Hoover et al. 2014 this is a reasonable assumption
-        psi = 22,
+        psi = 20,
         # Only one breakpoint, for simplicity
         npsi = 1,
         # Bootstrap params
-        control = seg.control(n.boot = 50, tol = 1e-07)
+        control = seg.control(n.boot = 50, seed = 2)
       ))
     
-    # Print to console for convenience
-    print(seg_fit)
+    plot.segmented(seg_fit)
+    lines.segmented(seg_fit)
+  
+    # 95% CI lower
+    lower <- confint.segmented(seg_fit)[2]
+    
+    # 95% CI upper
+    upper <- confint.segmented(seg_fit)[3]
     
     # If no breakpoint detected, return zeroes
     if (is.null(seg_fit$psi)) {
-      return(c(0, 0, 0))
+      return(c(0, 0, 0, 0, 0))
     } else {
-      breakpoint <- seg_fit$psi
+      breakpoint <- c(seg_fit$psi, # Estimate and St.Error
+                      lower, # 95% CI lower
+                      upper # 95% CI upper
+      )
       return(breakpoint)
     }
   }
@@ -69,7 +78,7 @@ cycle_genotypes <-
       # Needed in case a 3x3 matrix of zeros with no colnames is made!
       # 
       colnames(breakpoints) <-
-        c("Initial", "Est.", "St.Err")
+        c("Initial", "Est.", "St.Err", "lower", "upper")
       
       # Add genotype indicator
       breakpoints$geno <- c(11, 2, 5)
@@ -87,7 +96,7 @@ cycle_genotypes <-
     }
     
     # If error is higher than 3, it's probably not a real breakpoint
-    breakpoints_df[(breakpoints_df$St.Err > 3), ]$Est. <- 0
+    # breakpoints_df[(breakpoints_df$St.Err > 3), ]$Est. <- 0
     
     # Rename row names
     rownames(breakpoints_df) <- seq(1, nrow(breakpoints_df))
