@@ -116,7 +116,7 @@ run_breakpoint_analysis <-
             "B_total",
             "B_below",
             "B_above",
-            "A_B"
+            "B_A"
           )
         ),
         
@@ -139,7 +139,7 @@ run_breakpoint_analysis <-
             "DMCr",
             "Bv",
             "Br",
-            "A_B"
+            "B_A"
           )
         ),
         

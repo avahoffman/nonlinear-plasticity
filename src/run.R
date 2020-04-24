@@ -62,7 +62,7 @@ ggsave(file = "figures/treatment_effects.pdf", height = 7, width=7)
 # Plot LDAs ----
 gather_lda_plots(outfile = "figures/genotype_LDAs.pdf")
 
-# Breakpoints
+# Breakpoint heatmap ----
 make_breakpoint_plot()
 ggsave(file = "figures/breakpoints.pdf", height = 7, width = 7)
 
