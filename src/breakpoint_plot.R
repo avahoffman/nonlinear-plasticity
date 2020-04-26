@@ -9,7 +9,7 @@ library(dplyr)
 strong_effect_color <- "#d0d1e6"
 weak_effect_color <- "#fdd49e"
 no_effect_color <- "#fc8d59"
-colfunc <- colorRampPalette(c('#fff7fb', "#a6bddb"))
+colfunc <- colorRampPalette(c("#fff7fb", '#74a9cf'))
 breakpoint_pal <- c(colfunc(14), '#fdd49e')
 zero_line_col <- "#bdbdbd"
 
@@ -34,8 +34,14 @@ clean_breakpoint_data_for_plotting <-
     # Round estimates to the nearest percent
     df$Est. <- round(df$Est., 0)
     
+    df$interval <- df$upper - df$lower
+    
     # Fill zeros with NAs since we don't care to plot them in the heatmap
-    df$Est.[(df$Est. == 0)] <- "Linear"
+    df$Est.[(df$`Est.` == 0 | 
+               # df$lower < 5 | 
+               # df$upper > 35 | 
+               # df$`St.Err` > 4 |
+               df$pvalue > 0.05 )] <- "Linear"
     
     return(df)
   }
@@ -47,6 +53,7 @@ make_breakpoint_plot <-
     
     # Read in data
     df <- clean_breakpoint_data_for_plotting()
+    breakpoint_pal <- c(colfunc(length(unique(df$Est.)) - 1), '#fdd49e')
     
     if (!(recovery)) {
       # DROP recovery for now
@@ -56,7 +63,6 @@ make_breakpoint_plot <-
       # OR only look at recovery
       df <-
         df %>% dplyr::filter(subset == "Recovery")
-      breakpoint_pal <- c(colfunc(5), '#fdd49e')
       # Drop total since I didn't really use this in the experimental phase
       df <- df[(df$measure != "B_total"),]
     }
@@ -148,6 +154,8 @@ make_breakpoint_plot <-
           labeller = label_parsed
         )
     }
-    
+  
     return(gg)
   }
+
+make_breakpoint_plot()
