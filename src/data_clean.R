@@ -34,8 +34,8 @@ clean_phys_data <-
     
     for (measure in 11:45) {
       d <- df[, measure]
-      d[outliers::scores(na.omit(d), prob = 0.98) == 1] <-
-        mean(d[outliers::scores(na.omit(d), prob = 0.98) == 0])
+      # d[outliers::scores(na.omit(d), prob = 0.99) == 1] <-
+      #   mean(d[outliers::scores(na.omit(d), prob = 0.99) == 0])
       df[, measure] <- d
     }
     

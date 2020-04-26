@@ -252,7 +252,8 @@ do_measure_mcmc_sampling <-
                       response = "ugs")
     run_measure_model(comp_gamma,
                       infile = "data/phys_plants_clean.csv",
-                      response = "ufv")
+                      response = "ufv",
+                      iter = 50000)
     run_measure_model(comp_gamma,
                       infile = "data/phys_plants_clean.csv",
                       response = "uWUEi")

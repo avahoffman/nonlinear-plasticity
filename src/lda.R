@@ -10,6 +10,7 @@ prepare_lda_data <-
            leave_out_indicator,
            subset,
            v_just,
+           h_just,
            spoke_scale_factor,
            by_geno = T) {
     # This function..
@@ -70,14 +71,12 @@ prepare_lda_data <-
       load_dat %>% left_join(orders, by = "varnames")
     # Add leave out indicator and v_just for plotting
     load_dat <-
-      cbind(load_dat, leave_out_indicator, v_just)
+      cbind(load_dat, leave_out_indicator, v_just, h_just)
     print(load_dat)
     
     # save only top loadings in LD1 and LD2
     load_dat <-
       load_dat %>%
-      mutate(h_just = replace(x_end, x_end < 0, 1)) %>%
-      mutate(h_just = replace(h_just, x_end >= 0, 0)) %>%
       dplyr::filter(leave_out_indicator != 0)
     
     subset_f <- rep(subset, nrow(plda$x))
@@ -104,7 +103,6 @@ prepare_lda_data <-
 
 make_lda_plot <-
   function(d,
-           vjust,
            xlim = NA,
            ylim = NA) {
     # This function..
@@ -154,7 +152,7 @@ make_lda_plot <-
           radius = log10(length) * d[[5]]
         ),
         d[[3]],
-        color = "gray",
+        color = "#737373",
         size = 0.5,
         show.legend = FALSE
       ) +
@@ -327,8 +325,9 @@ gather_lda_plots <-
                        "trt"),
         subset = "Growth",
         leave_out_indicator = c(1, 1, 1, 1, 0),
-        v_just = c(1, 0, 1, 0.5, 0.5),
-        spoke_scale_factor = 4
+        v_just = c(1, 0, 1, 1, 0.5),
+        h_just = c(0.5, 0.5, 0.25, 0.75, 0.5),
+        spoke_scale_factor = 8
       )
     
     # Cumulative subset
@@ -345,8 +344,8 @@ gather_lda_plots <-
           "Rsa",
           "Rl",
           "Rd",
-          #"LA",
-          "DMCv",
+          "LA",
+          #"DMCv",
           "DMCr",
           "Bv",
           "Br",
@@ -355,7 +354,7 @@ gather_lda_plots <-
         ),
         subset = "Cumulative",
         leave_out_indicator = c(1, 1, 1, 1, 1,
-                                0, 1, 1, 1, 1,
+                                1, 1, 1, 1, 1,
                                 1, 1, 1, 1, 0),
         v_just = c(
           0.5,
@@ -374,7 +373,12 @@ gather_lda_plots <-
           0,
           0.5
         ),
-        spoke_scale_factor = 4
+        h_just = c(
+          0.5, 0.5, 0.5, 0.5, 0.5,
+          0.5, 0.5, 0.5, 0.5, 0.5,
+          0.5, 0.5, 0.5, 0.5, 0.5
+        ),
+        spoke_scale_factor = 5
       )
     
     # Instantaneous subset
@@ -393,9 +397,25 @@ gather_lda_plots <-
         subset = "Instantaneous",
         leave_out_indicator = c(1, 1, 1, 1,
                                 1, 1, 0),
-        v_just = c(0.5, 1, 1, 0,
-                   0.5, 0.5, 0.5),
-        spoke_scale_factor = 4
+        v_just = c(
+          0,
+          0.5,
+          1,
+          0.5,
+          1,
+          0,
+          0.5
+        ), 
+        h_just = c(
+          0.5,
+          1,
+          0.5,
+          0,
+          0,
+          0,
+          0.5
+        ), 
+        spoke_scale_factor = 6
       )
     
     leg <-
@@ -410,7 +430,7 @@ gather_lda_plots <-
       plot_grid(
         make_lda_plot(d1),
         make_lda_plot(d3),
-        make_lda_plot(d2, xlim = 7),
+        make_lda_plot(d2, xlim = 9),
         leg,
         nrow = 1,
         rel_widths = c(1, 1, 1, 0.2),
@@ -549,3 +569,4 @@ gather_lda_plots_combos <-
     }
   }
 
+gather_lda_plots(outfile = "figures/genotype_LDAs.pdf")
