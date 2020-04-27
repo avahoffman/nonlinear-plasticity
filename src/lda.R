@@ -55,13 +55,14 @@ prepare_lda_data <-
     # Save the loadings
     load_dat <-
       data.frame(varnames = rownames(coef(lda_results)), coef(lda_results))
-    load_dat$length <- with(load_dat, sqrt(LD1 ^ 2 + LD2 ^ 2))
+    load_dat$length <-
+      with(load_dat, log10(sqrt(LD1 ^ 2 + LD2 ^ 2)) + 1)
     load_dat$angle <- atan2(load_dat$LD2, load_dat$LD1)
     load_dat$x_start <- load_dat$y_start <- 0
     load_dat$x_end <-
-      cos(load_dat$angle) * log10(load_dat$length) * spoke_scale_factor # This sets the length of your lines.
+      cos(load_dat$angle) * load_dat$length * spoke_scale_factor # This sets the length of your lines.
     load_dat$y_end <-
-      sin(load_dat$angle) * log10(load_dat$length) * spoke_scale_factor # This sets the length of your lines.
+      sin(load_dat$angle) * load_dat$length * spoke_scale_factor # This sets the length of your lines.
     
     # Data containing full / parse-able names for phenotypic measures
     orders <-
@@ -146,12 +147,10 @@ make_lda_plot <-
       ) +
       labs(colour = "Site") +
       geom_spoke(
-        aes(
-          x_start,
-          y_start,
-          angle = angle,
-          radius = log10(length) * d[[5]]
-        ),
+        aes(x_start,
+            y_start,
+            angle = angle,
+            radius = length * d[[5]]),
         d[[3]],
         color = "#737373",
         size = 0.5,
@@ -216,9 +215,23 @@ make_lda_plot_for_all_combos <-
     )
     
     genotype_colors <-
-      c("#d7301f","#d7301f90","#d7301f80","#d7301f70","#d7301f60",
-        "#fc8d59","#fc8d5990","#fc8d5980","#fc8d5970","#fc8d5960",
-        "#3690c0","#3690c090","#3690c080","#3690c070","#3690c060")
+      c(
+        "#d7301f",
+        "#d7301f90",
+        "#d7301f80",
+        "#d7301f70",
+        "#d7301f60",
+        "#fc8d59",
+        "#fc8d5990",
+        "#fc8d5980",
+        "#fc8d5970",
+        "#fc8d5960",
+        "#3690c0",
+        "#3690c090",
+        "#3690c080",
+        "#3690c070",
+        "#3690c060"
+      )
     
     G11 <- parse(text = "paste(G11[R])")
     G2 <- parse(text = "paste(G2[R])")
@@ -238,16 +251,20 @@ make_lda_plot_for_all_combos <-
       ) +
       geom_point(aes(color = as.factor(combo),
                      shape = as.factor(combo)), size = 2.5) +
-      scale_color_manual(name = "Combo",
-                         labels = c(rep(G11,5), rep(G2,5), rep(G5,5)),
-                         values = genotype_colors) +
-      scale_fill_manual(name = "Combo",
-                        labels = c(rep(G11,5), rep(G2,5), rep(G5,5)),
-                        values = genotype_colors) +
+      scale_color_manual(
+        name = "Combo",
+        labels = c(rep(G11, 5), rep(G2, 5), rep(G5, 5)),
+        values = genotype_colors
+      ) +
+      scale_fill_manual(
+        name = "Combo",
+        labels = c(rep(G11, 5), rep(G2, 5), rep(G5, 5)),
+        values = genotype_colors
+      ) +
       scale_shape_manual(
         name = "Combo",
-        labels = c(rep(G11,5), rep(G2,5), rep(G5,5)),
-        values = c(rep(23,5), rep(24,5), rep(21,5))
+        labels = c(rep(G11, 5), rep(G2, 5), rep(G5, 5)),
+        values = c(rep(23, 5), rep(24, 5), rep(21, 5))
       ) +
       labs(
         x = paste("LD1 (", percent(d[[2]][1]), ")", sep = ""),
@@ -326,9 +343,9 @@ gather_lda_plots <-
                        "trt"),
         subset = "Growth",
         leave_out_indicator = c(1, 1, 1, 1, 0),
-        v_just = c(1, 0, 1, 0.5, 0.5),
-        h_just = c(1, 0, 1, 0.5, 0.5),
-        spoke_scale_factor = 4
+        v_just = c(0, 0, 1, 1, 0.5),
+        h_just = c(0.5, 0.5, 0.25, 0.5, 0.5),
+        spoke_scale_factor = 2
       )
     
     # Cumulative subset
@@ -340,14 +357,16 @@ gather_lda_plots <-
           "srl",
           "SLA",
           "Rv",
-          "Rt",
+          #"Rt",
           "Rsa_la",
+          
           "Rsa",
           "Rl",
           "Rd",
           "LA",
           #"DMCv",
           "DMCr",
+          
           "Bv",
           "Br",
           "B_A",
@@ -356,42 +375,40 @@ gather_lda_plots <-
         subset = "Cumulative",
         leave_out_indicator = c(1, 1, 1, 1, 1,
                                 1, 1, 1, 1, 1,
-                                1, 1, 1, 1, 0),
-        v_just = c(
-          0.5,
-          0,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0,
-          0.5,
-          1,
-          0.5,
-          0.5,
-          1,
-          1,
-          0,
-          1
-        ),
-        h_just = c(
-          0.5,
-          0,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0,
-          0.5,
-          1,
-          0.5,
-          0.5,
-          1,
-          1,
-          0,
-          1
-        ),
-        spoke_scale_factor = 4
+                                1, 1, 1, 0),
+        v_just = c(1,
+                   0,
+                   1,
+                   0.25,
+                   0.5,
+                   
+                   0.5,
+                   0,
+                   1,
+                   0,
+                   1,
+                   
+                   1,
+                   1,
+                   0.5,
+                   1),
+        h_just = c(0.85,
+                   0.25,
+                   0.5,
+                   0.75,
+                   1,
+                   
+                   0.2,
+                   0.6,
+                   0.75,
+                   0.5,
+                   0.5,
+                   
+                   0.5,
+                   0.5,
+                   0.75,
+                   0.5),
+        spoke_scale_factor = 2
       )
     
     # Instantaneous subset
@@ -401,20 +418,17 @@ gather_lda_plots <-
         responses =  c("uWUEi",
                        "ugs",
                        "ufv",
-                       "uAnet",
+                       #"uAnet",
                        "max_WUEi",
                        #"max_gs",
                        "max_fv",
                        #"max_Anet",
                        "trt"),
         subset = "Instantaneous",
-        leave_out_indicator = c(1, 1, 1, 1,
-                                1, 1, 0),
-        v_just = c(0.5, 1, 1, 0,
-                   0.5, 0.5, 0.5),
-        h_just = c(0.5, 1, 1, 0,
-                   0.5, 0.5, 0.5),
-        spoke_scale_factor = 4
+        leave_out_indicator = c(1, 1, 1, 1, 1, 0),
+        v_just = c(1, 0.5, 0, 1, 0, 1),
+        h_just = c(0.5, 1, 0.5, 0.5, 0.5, 1),
+        spoke_scale_factor = 2
       )
     
     leg <-
@@ -429,7 +443,7 @@ gather_lda_plots <-
       plot_grid(
         make_lda_plot(d1),
         make_lda_plot(d3),
-        make_lda_plot(d2, xlim = 7),
+        make_lda_plot(d2),
         leg,
         nrow = 1,
         rel_widths = c(1, 1, 1, 0.2),
@@ -494,22 +508,20 @@ gather_lda_plots_combos <-
         leave_out_indicator = c(1, 1, 1, 1, 1,
                                 0, 1, 1, 1, 1,
                                 1, 1, 1, 1),
-        v_just = c(
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5
-        ),
+        v_just = c(0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5,
+                   0.5),
         spoke_scale_factor = 4,
         by_geno = F
       )
@@ -524,49 +536,47 @@ gather_lda_plots_combos <-
                        "uAnet",
                        "max_WUEi",
                        #"max_gs",
-                       "max_fv"
-                       #"max_Anet"
-                       ),
-        subset = "Instantaneous",
-        leave_out_indicator = c(1, 1, 1, 1,
-                                1, 1),
-        v_just = c(0.5, 1, 1, 0,
-                   0.5, 0.5),
-        spoke_scale_factor = 4,
-        by_geno = F
-      )
-    
-    leg <-
-      g_legend(make_lda_plot(d1) + theme(
-        legend.position = "right",
-        # Spread out legend keys a little bit more
-        legend.key.size = unit(0.7, "cm")
-      ))
-    
-    # Plot two subplots in appropriate widths
-    gd <-
-      plot_grid(
-        make_lda_plot_for_all_combos(d1),
-        make_lda_plot_for_all_combos(d3),
-        make_lda_plot_for_all_combos(d2, xlim = 6),
-        leg,
-        nrow = 1,
-        rel_widths = c(1, 1, 1, 0.2),
-        labels = c("(a)", "(b)", "(c)", "")
-      )
-    
-    # Write file or return gridded plot
-    if (is.na(outfile)) {
-      return(gd)
-    } else {
-      ggsave(
-        plot = gd,
-        filename = outfile,
-        height = 5,
-        width = 15
-      )
-    }
+                       "max_fv",
+                       #"max_Anet"),
+                       subset = "Instantaneous",
+                       leave_out_indicator = c(1, 1, 1, 1,
+                                               1, 1),
+                       v_just = c(0.5, 1, 1, 0,
+                                  0.5, 0.5),
+                       spoke_scale_factor = 4,
+                       by_geno = F
+        )
+        
+        leg <-
+          g_legend(make_lda_plot(d1) + theme(
+            legend.position = "right",
+            # Spread out legend keys a little bit more
+            legend.key.size = unit(0.7, "cm")
+          ))
+        
+        # Plot two subplots in appropriate widths
+        gd <-
+          plot_grid(
+            make_lda_plot_for_all_combos(d1),
+            make_lda_plot_for_all_combos(d3),
+            make_lda_plot_for_all_combos(d2, xlim = 6),
+            leg,
+            nrow = 1,
+            rel_widths = c(1, 1, 1, 0.2),
+            labels = c("(a)", "(b)", "(c)", "")
+          )
+        
+        # Write file or return gridded plot
+        if (is.na(outfile)) {
+          return(gd)
+        } else {
+          ggsave(
+            plot = gd,
+            filename = outfile,
+            height = 5,
+            width = 15
+          )
+        }
   }
 
 
-gather_lda_plots(outfile = "figures/genotype_LDAs.pdf")
