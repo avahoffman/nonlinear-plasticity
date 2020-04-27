@@ -426,8 +426,8 @@ gather_lda_plots <-
                        "trt"),
         subset = "Instantaneous",
         leave_out_indicator = c(1, 1, 1, 1, 1, 0),
-        v_just = c(1, 0.5, 0, 1, 0, 1),
-        h_just = c(0.5, 1, 0.5, 0.5, 0.5, 1),
+        v_just = c(1, 0.5, 0, 0.5, 0, 1),
+        h_just = c(0.5, 1, 0.5, 0, 0.5, 1),
         spoke_scale_factor = 2
       )
     
