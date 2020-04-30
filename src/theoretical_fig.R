@@ -16,7 +16,7 @@ make_subplot <-
         y = value,
         color = as.factor(geno)
       )) +
-      ylab("Trait value    ") +
+      ylab("Phenotype") +
       ylim(c(0, 12)) +
       geom_line() +
       geom_point(size = 2) +
@@ -49,10 +49,10 @@ make_theor_fig <-
     d4 <- df[grep("4", df$plot), ]
     
     # Make each subfigure
-    gg1 <- make_subplot(d1)
-    gg2 <- make_subplot(d2)
+    gg1 <- make_subplot(d1) + theme(axis.text.x = element_text(color = "transparent"))
+    gg2 <- make_subplot(d2) + ylab("") + theme(axis.text.x = element_text(color = "transparent"))
     gg3 <- make_subplot(d3)
-    gg4 <- make_subplot(d4)
+    gg4 <- make_subplot(d4) + ylab("")
     
     # Arrange and add labels
     grid <-
