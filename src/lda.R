@@ -116,6 +116,12 @@ make_lda_plot <-
     G2 <- parse(text = "paste(G2[S])")
     G5 <- "G5"
     
+    effect_names <- c(
+      `Growth` = "Growth",
+      `Instantaneous` = "Instantaneous",
+      `Cumulative` = "Cumulative"
+    )
+    
     gg <-
       ggplot(d[[1]], aes(LD1, LD2)) +
       theme_cowplot() +
