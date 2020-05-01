@@ -35,8 +35,8 @@ make_phenotype_plot <-
     df <- cbind(df, facet)
     
     # Genotype names
-    G11 <- parse(text = "paste(G11[R])")
-    G2 <- parse(text = "paste(G2[R])")
+    G11 <- parse(text = "paste(G11[S])")
+    G2 <- parse(text = "paste(G2[S])")
     G5 <- "G5"
     
     # Genotype colors

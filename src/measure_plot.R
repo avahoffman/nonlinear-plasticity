@@ -66,9 +66,9 @@ make_effect_plot <-
     
     effect_names <- c(
       `trt_effect` = "Treatment~effect",
-      `G11[R]-G2[R]` = "G11[R]-G2[R]",
-      `G11[R]-G5` = "G11[R]-G5",
-      `G2[R]-G5` = "G2[R]-G5",
+      `G11[R]-G2[R]` = "G11[S]-G2[S]",
+      `G11[R]-G5` = "G11[S]-G5",
+      `G2[R]-G5` = "G2[S]-G5",
       #`int_effect` = "Interaction~effect", # Excluded from the labeller for now
       `Growth` = "Growth",
       `Instantaneous` = "Instantaneous",
