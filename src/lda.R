@@ -112,8 +112,8 @@ make_lda_plot <-
     genotype_colors <-
       c("#d7301f", "#fc8d59", "#3690c0")
     
-    G11 <- parse(text = "paste(G11[R])")
-    G2 <- parse(text = "paste(G2[R])")
+    G11 <- parse(text = "paste(G11[S])")
+    G2 <- parse(text = "paste(G2[S])")
     G5 <- "G5"
     
     gg <-
@@ -233,8 +233,8 @@ make_lda_plot_for_all_combos <-
         "#3690c060"
       )
     
-    G11 <- parse(text = "paste(G11[R])")
-    G2 <- parse(text = "paste(G2[R])")
+    G11 <- parse(text = "paste(G11[S])")
+    G2 <- parse(text = "paste(G2[S])")
     G5 <- "G5"
     
     gg <-
@@ -545,7 +545,7 @@ gather_lda_plots_combos <-
                                   0.5, 0.5),
                        spoke_scale_factor = 4,
                        by_geno = F
-        )
+        ))
         
         leg <-
           g_legend(make_lda_plot(d1) + theme(
