@@ -1,5 +1,5 @@
 ###########################################################################################
-## CODE FOR PLOTTING
+## CODE FOR PLOTTING BREAKPOINT ANALYSIS
 ###########################################################################################
 library(ggplot2)
 library(cowplot)
@@ -74,8 +74,8 @@ make_breakpoint_plot <-
     # Make a reordered factor to order facets
     df$facet_geno = factor(df$geno,
                            levels = c('2', '11', '5'))
-    df$facet_geno <- gsub("2", "G2[R]", df$facet_geno)
-    df$facet_geno <- gsub("11", "G11[R]", df$facet_geno)
+    df$facet_geno <- gsub("2", "G2[S]", df$facet_geno)
+    df$facet_geno <- gsub("11", "G11[S]", df$facet_geno)
     df$facet_geno <- gsub("5", "G5", df$facet_geno)
     
     # Order full name so it falls alphabetically downward on the y axis
