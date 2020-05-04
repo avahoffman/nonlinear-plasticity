@@ -157,5 +157,3 @@ make_breakpoint_plot <-
   
     return(gg)
   }
-
-make_breakpoint_plot()
