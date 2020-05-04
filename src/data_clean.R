@@ -7,33 +7,51 @@ library(dplyr)
 
 clean_biomass_data <-
   function() {
+    # This function reads in raw biomass/cumulative data and writes a cleaned file to csv
+    
+    # Raw file name
     infile <- "biomass_plants"
     
+    # Read in data
     df <-
       read.csv(file = paste("data/", infile, ".csv", sep = ""),
                header = T)
     
+    # Iterate through response variable columns
     for (measure in 9:23) {
       d <- df[, measure]
+      # If removal of outliers is desired, do it here:
       # d[outliers::scores(na.omit(d), prob = 0.995) == 1] <-
       #   mean(d[outliers::scores(na.omit(d), prob = 0.99) == 0])
       df[, measure] <- d
     }
     
-    write.csv(df, file = paste("data/", infile, "_clean.csv", sep = ""))
+    # Write to csv
+    write.csv(df,
+              file = paste("data/",
+                           infile,
+                           "_clean.csv",
+                           sep = ""))
   }
 
 
 clean_phys_data <-
   function() {
+    # This function reads in raw physiological/instantaneous data and writes a cleaned 
+    # file to csv
+    
+    # Raw file name
     infile <- "phys_plants"
     
+    # Read in data
     df <-
       read.csv(file = paste("data/", infile, ".csv", sep = ""),
                header = T)
     
+    # Iterate through response variable columns
     for (measure in 11:45) {
       d <- df[, measure]
+      # If removal of outliers is desired, do it here:
       # d[outliers::scores(na.omit(d), prob = 0.99) == 1] <-
       #   mean(d[outliers::scores(na.omit(d), prob = 0.99) == 0])
       df[, measure] <- d
@@ -60,8 +78,10 @@ clean_phys_data <-
     df$WUEi10_1011[df$WUEi10_1011 < 0] <- NA
     
     # Create new variables
-    
+    # To do this, iterate through rows (observations) and calculate new 
+    # variables for each row
     for (i in 1:nrow(df)) {
+      
       # Measure means
       df$uAnet[i] <-
         mean(
@@ -163,6 +183,7 @@ clean_phys_data <-
         )
     }
     
+    # Write to csv
     write.csv(df, file = paste("data/", infile, "_clean.csv", sep = ""))
     
   }
@@ -170,20 +191,31 @@ clean_phys_data <-
 
 clean_all_plant_data <-
   function() {
+    # This function reads in height and growth rate data and writes a cleaned 
+    # file to csv
+    
+    # Raw file name
     infile <- "all_plants"
     
+    # Read in data
     df <-
       read.csv(file = paste("data/", infile, ".csv", sep = ""),
                header = T)
     
+    # Iterate through response variable columns
     for (measure in 7:25) {
       d <- df[, measure]
+      # Score and replace any outliers with the mean (minus those outliers)
       d[outliers::scores(na.omit(d), prob = 0.999) == 1] <-
         mean(d[outliers::scores(na.omit(d), prob = 0.999) == 0])
       df[, measure] <- d
     }
     
+    # Create new variables
+    # To do this, iterate through rows (observations) and calculate new 
+    # variables for each row
     for (i in 1:nrow(df)) {
+      
       # Measure means
       df$uH[i] <-
         mean(
@@ -239,26 +271,38 @@ clean_all_plant_data <-
         )
     }
     
+    # Write to csv
     write.csv(df, file = paste("data/", infile, "_clean.csv", sep = ""))
   }
 
 
 clean_recovery_data <-
   function() {
+    # This function reads in recovery data and writes a cleaned 
+    # file to csv
+    
+    # Raw file name
     infile <- "recovery_plants"
     
+    # Read in data
     df <-
       read.csv(file = paste("data/", infile, ".csv", sep = ""),
                header = T)
     
+    # Iterate through response variable columns
     for (measure in 11:30) {
       d <- df[, measure]
+      # If removal of outliers is desired, do it here:
       # d[outliers::scores(na.omit(d), prob = 0.999) == 1] <-
       #   mean(d[outliers::scores(na.omit(d), prob = 0.999) == 0])
       df[, measure] <- d
     }
     
+    # Create new variables
+    # To do this, iterate through rows (observations) and calculate new 
+    # variables for each row
     for (i in 1:nrow(df)) {
+      
       # Measure means
       df$uH[i] <-
         mean(c(
@@ -304,5 +348,7 @@ clean_recovery_data <-
         )
     }
     
+    # Write to csv
     write.csv(df, file = paste("data/", infile, "_clean.csv", sep = ""))
   }
+
