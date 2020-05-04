@@ -35,7 +35,7 @@ make_theor_fig(outfile = "figures/theoretical_fig.pdf")
 # Make experimental timeline to go in the supplementary material
 make_timeline()
 
-# Clean data
+# Clean data ----
 clean_biomass_data()
 clean_phys_data()
 clean_all_plant_data()
@@ -67,11 +67,11 @@ gather_lda_plots(outfile = "figures/genotype_LDAs.pdf")
 make_breakpoint_plot()
 ggsave(file = "figures/breakpoints.pdf", height = 7, width = 7)
 
-# Recovery effects
+# Recovery effects ----
 make_effect_plot(recovery = T)
 ggsave(file = "figures/recovery_trt.pdf", height = 4, width=7)
 
-# Plot phenotypes by treatment ====
+# Plot phenotypes by treatment ----
 cycle_phenotype_plots()
 growth_summary()
 instantaneous_summary()
