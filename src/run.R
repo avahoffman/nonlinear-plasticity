@@ -13,7 +13,7 @@ sessionInfo()
 source("src/utils.R")
 
 # Specific functions
-source("src/theoretical_fig.R")
+source("src/plot_theoretical.R")
 source("src/timeline.R")
 source("src/data_clean.R")
 source("src/corr_analysis.R")
