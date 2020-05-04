@@ -22,7 +22,7 @@ source("src/model_phenotype.R")
 source("src/model_theta.R")
 source("src/model_breakpoints.R")
 source("src/plot_effects.R")
-source("src/phenotype_plot.R")
+source("src/plot_reaction_norms.R")
 source("src/lda.R")
 
 
