@@ -22,6 +22,7 @@ get_breakpoints <-
         glm(as.formula(paste(response, " ~ trt ", sep = "")), data = df, family = Gamma)
     }
     
+    # Run Davies' test for different slopes in the relationship
     pval <- davies.test(fit, seg.Z = ~ trt)
 
     # Find breakpoints
@@ -194,5 +195,6 @@ run_breakpoint_analysis <-
         )
       )
     
+    # Write results
     write.csv(df, file = "output/breakpoint_analysis.csv")
   }

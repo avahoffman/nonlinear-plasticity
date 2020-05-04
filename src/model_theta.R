@@ -1,5 +1,5 @@
 ###########################################################################################
-## MODEL FOR THETA PARAMETER : PROBABILITY OF FLOWERING OR PROBABILITY OF RESPROUTING
+## MODEL FOR THETA PARAMETER : PROBABILITY OF FLOWERING OR PROBABILITY OF RE-SPROUTING
 ###########################################################################################
 library(rstan)
 library(LambertW)
@@ -28,7 +28,7 @@ Stan_model_theta <- "
 run_flwr_rh_model <-
   function(comp,
            response) {
-    # This function...
+    # This function wraps the sampling
     
     # Summarize model
     summ <-
@@ -58,6 +58,10 @@ run_flwr_rh_model <-
 
 do_flwr_rh_mcmc_sampling <-
   function() {
+    # This function runs the posterior sampling of flowering and re-sprouting
+    # probability
+    
+    # Compile Stan model
     comp_theta <-
       stan_model(model_code = Stan_model_theta, verbose = T)
     
