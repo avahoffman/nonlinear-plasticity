@@ -1,5 +1,5 @@
 ###########################################################################################
-## MODEL FOR MORPHOLOGY, PHYSIOLOGICAL TRAITS OF INTEREST
+## MODEL FOR MORPHOLOGY, PHYSIOLOGICAL PHENOTYPES OF INTEREST
 ###########################################################################################
 library(rstan)
 library(LambertW)
@@ -183,7 +183,7 @@ run_measure_model <-
            response,
            recovery = F,
            iter_ = 10000) {
-    # This function...
+    # This function wraps the data and sampling for the phenotypes (see utils for functions)
     
     # Summarize model
     summ <-
@@ -219,6 +219,9 @@ run_measure_model <-
 
 do_measure_mcmc_sampling <-
   function() {
+    # This function runs the posterior sampling for all phenotypes
+    
+    # Compile both the normal and gamma Stan models
     comp_gamma <-
       stan_model(model_code = Stan_model_gamma, verbose = T)
     comp_normal <-
