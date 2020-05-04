@@ -14,7 +14,7 @@ source("src/utils.R")
 
 # Specific functions
 source("src/plot_theoretical.R")
-source("src/timeline.R")
+source("src/plot_timeline.R")
 source("src/data_clean.R")
 source("src/corr_analysis.R")
 source("src/pca.R")
@@ -31,7 +31,7 @@ source("src/lda.R")
 # Make the theoretical figure
 make_theor_fig(outfile = "figures/theoretical_fig.pdf")
 
-# Make experimental timeline
+# Make experimental timeline to go in the supplementary material
 make_timeline()
 
 # Clean data

@@ -49,9 +49,12 @@ make_theor_fig <-
     d4 <- df[grep("4", df$plot), ]
     
     # Make each subfigure
+    # Get rid of x axis labels
     gg1 <- make_subplot(d1) + theme(axis.text.x = element_text(color = "transparent"))
+    # Get rid of x axis labels and y label
     gg2 <- make_subplot(d2) + ylab("") + theme(axis.text.x = element_text(color = "transparent"))
     gg3 <- make_subplot(d3)
+    # Get rid of y label
     gg4 <- make_subplot(d4) + ylab("")
     
     # Arrange and add labels
@@ -79,7 +82,7 @@ make_theor_fig <-
       grobs[[which(sapply(grobs, function(x)
         x$name) == "guide-box")]]
     
-    # Plot and save
+    # Plot and save given outfile arg
     plot_grid(grid,
               legend,
               ncol = 1,
