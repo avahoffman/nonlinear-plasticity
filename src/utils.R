@@ -18,11 +18,11 @@ run_mcmc <-
     response.1 <-
       df[, c(response)]
     df.filt <-
-      df[!(response.1 = is.na(response.1)), ]
+      df[!(response.1 = is.na(response.1)),]
     
     # Make design matrix
     dm <-
-      model.matrix( ~ as.factor(trt) * as.factor(geno), data = df.filt) # Model Matrix
+      model.matrix(~ as.factor(trt) * as.factor(geno), data = df.filt) # Model Matrix
     
     # New dependent variable with NA removed
     response.var <-
@@ -38,7 +38,7 @@ run_mcmc <-
         'X' = dm
       )
     
-    ##SAMPLE
+    # SAMPLE
     fit <-
       sampling(
         comp,
@@ -68,12 +68,10 @@ gather_posterior_data <-
       (summ_fit[grep("Y", rownames(summ_fit)), c(1, 3, 5, 7, 4, 8, 10)])
     ))
     ests <-
-      ests[!(grepl("beta", rownames(ests))),] # Drop model param "beta"
+      ests[!(grepl("beta", rownames(ests))), ] # Drop model param "beta"
     descr <- gsub("as.factor", "", colnames(dm))
-    descr <- c(
-      gsub("geno)3", "geno)5", descr),
-      rep("no_descr", 20)
-    )
+    descr <- c(gsub("geno)3", "geno)5", descr),
+               rep("no_descr", 20))
     
     param <-
       c(
@@ -86,9 +84,10 @@ gather_posterior_data <-
         rep("posterior value", 15)
       )
     
-    geno <- c(rep("none", 20), rep("G11", 5), rep("G2", 5), rep("G5", 5))
+    geno <-
+      c(rep("none", 20), rep("G11", 5), rep("G2", 5), rep("G5", 5))
     
-    trt <- c(rep("none", 20), rep(c("10","15","20","25","Sat'd"),3))
+    trt <- c(rep("none", 20), rep(c("10", "15", "20", "25", "Sat'd"), 3))
     
     ests <- cbind(param, ests, geno, trt)
     
@@ -103,8 +102,8 @@ gather_posterior_data <-
     Pr_calc <- data.frame()
     Pr_vals <-  as.data.frame(ests[, 8:9])
     for (r in 1:nrow(Pr_vals)) {
-      max_ <- max(Pr_vals[r, ])
-      min_ <- min(Pr_vals[r, ])
+      max_ <- max(Pr_vals[r,])
+      min_ <- min(Pr_vals[r,])
       # Calculate the proportion of overlap on zero
       if (max_ < 0 & min_ < 0) {
         pr. <- 1
@@ -130,8 +129,10 @@ gather_posterior_data <-
 make_normality_plots <-
   function(summ_fit,
            response) {
-    sdf <- summ_fit[grep("Y", rownames(summ_fit)),]
-    rdf <- summ_fit[grep("e_y", rownames(summ_fit)),]
+    # This function makes the posterior checks
+    
+    sdf <- summ_fit[grep("Y", rownames(summ_fit)), ]
+    rdf <- summ_fit[grep("e_y", rownames(summ_fit)), ]
     pdf(
       file = paste(
         "figures/normality_test_plots/",
@@ -151,7 +152,7 @@ run_flwr_rh_mcmc <-
   function(comp,
            response,
            iter = 10000) {
-    # This function
+    # This function does sampling for flowering or resprouting data
     
     # Read in data
     df <-
@@ -162,7 +163,7 @@ run_flwr_rh_mcmc <-
     response.1 <-
       df[, c(response)]
     df.filt <-
-      df[!(response.1 = is.na(response.1)), ]
+      df[!(response.1 = is.na(response.1)),]
     
     # New dependent variable with NA removed
     response.var <-
@@ -196,8 +197,10 @@ run_flwr_rh_mcmc <-
 gather_flwr_rh_posterior_data <-
   function(summ_fit,
            response) {
-    ests <- as.data.frame(# Collect mean, 25-75, CI, and Rhat
-      (summ_fit[grep("theta", rownames(summ_fit)), c(1, 3, 5, 7, 4, 8, 10)]))
+    ests <- as.data.frame(
+      # Collect mean, 25-75, CI, and Rhat
+      (summ_fit[grep("theta", rownames(summ_fit)),
+                c(1, 3, 5, 7, 4, 8, 10)]))
     descr <- c("geno 11", "geno 2", "geno 5")
     ests <- cbind(rep(response, nrow(ests)), descr, ests)
     

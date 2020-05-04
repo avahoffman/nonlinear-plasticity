@@ -162,6 +162,8 @@ cycle_phenotype_plots <-
 leg <-
   g_legend(make_phenotype_plot("Bv") + theme(legend.margin = margin(l = 0.6, unit =
                                                                       'cm')))
+# Turn plot off, just use the leg object
+dev.off()
 
 growth_summary <-
   function() {

@@ -23,6 +23,7 @@ source("src/model_theta.R")
 source("src/model_breakpoints.R")
 source("src/plot_effects.R")
 source("src/plot_reaction_norms.R")
+source("src/plot_breakpoints.R")
 source("src/lda.R")
 
 

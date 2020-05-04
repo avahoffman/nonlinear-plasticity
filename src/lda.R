@@ -13,7 +13,18 @@ prepare_lda_data <-
            h_just,
            spoke_scale_factor,
            by_geno = T) {
-    # This function..
+    # This function performs the LDA and outputs data so that differences among genotypes
+    # can be plotted
+    # 
+    # infile: path name of clean data
+    # responses: vector of phenotypes to include in the LDA
+    # leave_out_indicator: vector indicating phenotypes to include in the LDA but not plot
+    # subset: plant subset (string)
+    # v_just: vector of vertical adjusts to labels corresponding to phenotypes
+    # h_just: vector of horizontal adjusts to labels corresponding to phenotypes
+    # spoke scale factor: multiplication factor for spokes (in case they are short)
+    # by_geno: boolean, whether grouping is at the genotype level (should be T for current 
+    # implementation)
     
     # Read in data
     df <- read.csv(infile, header = T) %>%
@@ -90,6 +101,8 @@ prepare_lda_data <-
       
       centroids <- aggregate(cbind(LD1, LD2) ~ geno, plotdat, mean)
     } else {
+      # This is here in case one wants to do anything with treatments ("combo" of treatments
+      # and genotypes)
       plotdat <-
         cbind(data.frame(pop = df %>%
                            dplyr::select(combo), plda$x),
@@ -98,6 +111,12 @@ prepare_lda_data <-
       centroids <- aggregate(cbind(LD1, LD2) ~ combo, plotdat, mean)
     }
     
+    # Returns
+    # 1) coordinates of every observation respective of the LDAs, plus genotype ID
+    # 2) Variance explained by each LDF
+    # 3) Length and directionality of spokes for each phenotype variable
+    # 4) Centroids for each genotype
+    # 5) Spoke scale factor variable (just passed along to next function)
     return(list(plotdat, prop.lda, load_dat, centroids, spoke_scale_factor))
   }
 
@@ -107,7 +126,13 @@ make_lda_plot <-
            vjust,
            xlim = NA,
            ylim = NA) {
-    # This function..
+    # This function creates the LDA scatterplot based on the above LDA on each plant
+    # subset
+    # 
+    # d: the list coming from prepare_lda_data()
+    # vjust: I think this is deprecated
+    # xlim: optional limit to LD1
+    # ylim: optional limit to LD2
     
     genotype_colors <-
       c("#d7301f", "#fc8d59", "#3690c0")
@@ -122,9 +147,13 @@ make_lda_plot <-
       `Cumulative` = "Cumulative"
     )
     
+    # Make plot
     gg <-
+      # Observations
       ggplot(d[[1]], aes(LD1, LD2)) +
       theme_cowplot() +
+      
+      # Centroids plotted
       geom_point(
         aes(
           fill = as.factor(geno),
@@ -134,24 +163,36 @@ make_lda_plot <-
         size = 5,
         data = d[[4]]
       ) +
+      
+      # Observational points of specific color and shape by genotype
       geom_point(aes(color = as.factor(geno),
                      shape = as.factor(geno)), size = 2.5) +
+      
+      # Specific color border
       scale_color_manual(name = "Genotype",
                          labels = c(G11, G2, G5),
                          values = genotype_colors) +
+      
+      # Specific color fills
       scale_fill_manual(name = "Genotype",
                         labels = c(G11, G2, G5),
                         values = genotype_colors) +
+      
+      # Specific shapes
       scale_shape_manual(
         name = "Genotype",
         labels = c(G11, G2, G5),
         values = c(23, 24, 21)
       ) +
+      
+      # Variation explained incorporated into x and y label
       labs(
         x = paste("LD1 (", percent(d[[2]][1]), ")", sep = ""),
         y = paste("LD2 (", percent(d[[2]][2]), ")", sep = "")
       ) +
       labs(colour = "Site") +
+      
+      # Spokes for different phenotypes
       geom_spoke(
         aes(x_start,
             y_start,
@@ -162,15 +203,20 @@ make_lda_plot <-
         size = 0.5,
         show.legend = FALSE
       ) +
+      
+      # Labels for each phenotype spoke
       geom_label(
         aes(
           y = y_end,
           x = x_end,
           label = short_parse,
+          # Need to adjust label on spoke depending on how they're arranged in space
           hjust = h_just,
           vjust = v_just
         ),
-        #can change alpha=length within aes
+        
+        # Can change alpha=length within aes
+        # Want to have labels slightly transparent
         d[[3]],
         alpha = 0.6,
         size = 3,
@@ -185,9 +231,12 @@ make_lda_plot <-
                  # Parse label name
                  labeller = as_labeller(effect_names, label_parsed)) +
       
+      # Simplify legend
       guides(text = FALSE,
              spoke = FALSE,
              length = FALSE) +
+      
+      # No legend title; correct alignment
       theme(
         legend.title = element_blank(),
         legend.position = "none",
@@ -210,6 +259,11 @@ make_lda_plot <-
 gather_lda_plots <-
   function(outfile = NA) {
     # This function gathers and writes (if indicated) LDA ordination plots
+    # This code is kind of a hot mess right now, but there's not really a good
+    # way to dodge the spoke/phenotype labels without using jitter, and there's not 
+    # good control over that..
+    # 
+    # outfile: optional outfile name for writing the plot (otherwise plot is just returned to console)
     
     # Growth subset
     d1 <-
@@ -271,22 +325,24 @@ gather_lda_plots <-
                    1,
                    0.5,
                    1),
-        h_just = c(0.85,
-                   0.25,
-                   0.5,
-                   0.75,
-                   1,
-                   
-                   0.2,
-                   0.6,
-                   0.75,
-                   0.5,
-                   0.5,
-                   
-                   0.5,
-                   0.5,
-                   0.75,
-                   0.5),
+        h_just = c(
+          0.85,
+          0.25,
+          0.5,
+          0.75,
+          1,
+          
+          0.2,
+          0.6,
+          0.75,
+          0.5,
+          0.5,
+          
+          0.5,
+          0.5,
+          0.75,
+          0.5
+        ),
         spoke_scale_factor = 2
       )
     
