@@ -32,8 +32,8 @@ produce_prcomps <-
     
     write.csv(getprcomps(
       df = read.csv(file = "data/biomass_plants.csv", header = T),
-      limits = c(8:23) # Select response vars to use
-    )$rotation[, 1:3],
+      limits = c(8:23) 
+    )$rotation[, 1:3], # Select response vars to use
     file = "output/pca/biomass_plants_pca_rotation.csv")
     
     write.csv(getprcomps(

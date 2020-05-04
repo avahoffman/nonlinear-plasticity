@@ -40,11 +40,11 @@ clean_phys_data()
 clean_all_plant_data()
 clean_recovery_data()
 
-# Run correlations to see if perhaps we should select only a few key traits
-run_corr_tests()
+# Run correlations to check for covariance among phenotypes
+# run_corr_tests()
 
 # Run principal components analysis to determine traits of interest
-produce_prcomps()
+# produce_prcomps()
 
 # Modeling ----
 do_measure_mcmc_sampling() # Measures
