@@ -164,7 +164,10 @@ make_effect_plot <-
         legend.position = "right",
         axis.title.y = element_blank(),
         strip.placement = "outside"
-      )
+      ) +
+      
+      # Ticks and formatting..
+      theme_sigmaplot(ticklen = -0.15)
     
     # Facet according to effect type (param_f) and phenotypic measure grouping (facet_left_f)
     if (!(recovery)) {

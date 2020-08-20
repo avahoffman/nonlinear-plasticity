@@ -177,7 +177,7 @@ growth_summary <-
     for (meas in meas_list) {
       i = i + 1
       p[[i]] <-
-        make_phenotype_plot(meas) + theme(legend.position = "none")
+        make_phenotype_plot(meas) + theme(legend.position = "none") + theme_sigmaplot(ticklen = -0.15)
     }
     
     grid <-

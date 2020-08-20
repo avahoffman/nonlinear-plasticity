@@ -241,7 +241,11 @@ make_lda_plot <-
         legend.title = element_blank(),
         legend.position = "none",
         legend.text.align = 0
-      )
+      ) +
+      
+      # Ticks
+      theme_sigmaplot(ticklen = -0.15)
+    
     
     if (!(is.na(xlim))) {
       gg <- gg + xlim(-xlim, xlim)

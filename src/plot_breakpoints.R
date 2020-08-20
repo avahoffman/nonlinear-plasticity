@@ -124,7 +124,7 @@ make_breakpoint_plot <-
         strip.placement = "outside",
         axis.text.x = element_text(color = "transparent"),
         axis.ticks.x = element_line(color = "transparent")
-      )
+      ) + theme_sigmaplot(ticklen = -0.15)
     
     # Facet according to genotype and phenotypic measure grouping (facet_left_f)
     if (!(recovery)) {
