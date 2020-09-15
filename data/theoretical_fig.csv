@@ -1,8 +1,8 @@
 plot,geno,trt,value
-1,Genotype 1,10,
-1,Genotype 1,20,12
-1,Genotype 2,10,
-1,Genotype 2,20,8
+1,Genotype 1,10,6
+1,Genotype 1,20,6
+1,Genotype 2,10,2
+1,Genotype 2,20,2
 2,Genotype 1,10,6
 2,Genotype 1,20,12
 2,Genotype 2,10,2
