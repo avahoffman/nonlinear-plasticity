@@ -182,28 +182,27 @@ growth_summary <-
     
     grid <-
       plot_grid(
-        p[[1]],
-        p[[2]],
-        p[[3]],
-        p[[4]],
+        p[[1]] + theme(axis.title.y = element_text(size = 9)),
+        p[[2]] + theme(axis.title.y = element_text(size = 9)),
+        p[[3]] + theme(axis.title.y = element_text(size = 9)),
+        p[[4]] + theme(axis.title.y = element_text(size = 9)),
         align = "vh",
         axis = "bl",
         nrow = 2,
-        labels = c("(a)", "(b)", "(c)", "(d)")
+        labels = c("(a)", "(b)", "(c)", "(d)"),
+        label_size = 13
       )
     
     ggsave(
-      gridExtra::grid.arrange(
-        grid,
-        leg,
-        nrow = 1,
-        widths = c(7, 1)
-      ),
+      gridExtra::grid.arrange(grid,
+                              leg,
+                              nrow = 1,
+                              widths = c(6.5, 1)),
       file = paste("figures/growth_summary.pdf", sep = ""),
-      height = 9,
-      width = 11
+      units = c("mm"),
+      width = 180
     )
-    
+
   }
 
 
@@ -242,12 +241,10 @@ instantaneous_summary <-
       )
     
     ggsave(
-      gridExtra::grid.arrange(
-        grid,
-        leg,
-        nrow = 1,
-        widths = c(10, 1)
-      ),
+      gridExtra::grid.arrange(grid,
+                              leg,
+                              nrow = 1,
+                              widths = c(10, 1)),
       file = paste("figures/instantaneous_summary.pdf", sep = ""),
       height = 9,
       width = 18
@@ -307,12 +304,10 @@ cumulative_summary <-
       )
     
     ggsave(
-      gridExtra::grid.arrange(
-        grid,
-        leg,
-        nrow = 1,
-        widths = c(10, 1)
-      ),
+      gridExtra::grid.arrange(grid,
+                              leg,
+                              nrow = 1,
+                              widths = c(10, 1)),
       file = paste("figures/cumulative_summary.pdf", sep = ""),
       height = 16,
       width = 12
@@ -358,12 +353,10 @@ recovery_summary <-
       )
     
     ggsave(
-      gridExtra::grid.arrange(
-        grid,
-        leg,
-        nrow = 1,
-        widths = c(10, 1)
-      ),
+      gridExtra::grid.arrange(grid,
+                              leg,
+                              nrow = 1,
+                              widths = c(10, 1)),
       file = paste("figures/recovery_summary.pdf", sep = ""),
       height = 9,
       width = 18

@@ -57,19 +57,19 @@ run_breakpoint_analysis()
 # Plot main effects ----
 make_effect_plot(genotype_comparison = T)
 ggsave(file = "figures/genotype_effects_20VWC.pdf", height = 9, width=10)
-make_effect_plot()
-ggsave(file = "figures/treatment_effects.pdf", height = 7, width=7)
+make_effect_plot() + theme(legend.position = "bottom")
+ggsave(file = "figures/treatment_effects.pdf", units = c("mm"), width=180)
 
 # Plot LDAs ----
 gather_lda_plots(outfile = "figures/genotype_LDAs.pdf")
 
 # Breakpoint heatmap ----
 make_breakpoint_plot()
-ggsave(file = "figures/breakpoints.pdf", height = 7, width = 7)
+ggsave(file = "figures/breakpoints.pdf", units = c("mm"), width = 180)
 
 # Recovery effects ----
-make_effect_plot(recovery = T)
-ggsave(file = "figures/recovery_trt.pdf", height = 4, width=7)
+make_effect_plot(recovery = T)  + theme(legend.position = "bottom")
+ggsave(file = "figures/recovery_trt.pdf", units = c("mm"), width = 180, height = 80)
 
 # Plot phenotypes by treatment ----
 cycle_phenotype_plots()

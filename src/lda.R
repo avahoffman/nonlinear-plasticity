@@ -396,8 +396,9 @@ gather_lda_plots <-
       ggsave(
         plot = gd,
         filename = outfile,
-        height = 5,
-        width = 15
+        units = c("mm"),
+        width = 360,
+        height = 130
       )
     }
   }

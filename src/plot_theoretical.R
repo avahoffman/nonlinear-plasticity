@@ -88,8 +88,9 @@ make_theor_fig <-
               ncol = 1,
               rel_heights = c(1, .15))
     ggsave(file = outfile,
-           height = 3,
-           width = 3)
+           units = c("mm"),
+           height = 80,
+           width = 80)
     
     dev.off()
   }
