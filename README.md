@@ -1,5 +1,7 @@
 # Nonlinear Plasticity
 
+This code accompanies "Nonlinear drought plasticity reveals intraspecific diversity in a dominant grass species" published in *Functional Ecology*
+
 Abstract
 
 1.	Intraspecific diversity of dominant species in native plant communities can modulate ecosystem function under both optimal and stressful conditions. Yet, few genotype by environment interaction studies quantify differences in the shape of plasticity functions or phenotypic breakpoints across genotypes in natural populations.
