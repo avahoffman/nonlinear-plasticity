@@ -1,13 +1,12 @@
-# nonlinear-plasticity
+# Nonlinear Plasticity
 
-[COMPLETE] How does a dominant grass respond to a gradient of water?
+Abstract
 
-•	Important plant species within ecological communities (dominant species) use intraspecific trait variation to maintain function under both optimal and stressful conditions. Yet, few studies of intraspecific diversity in natural populations account for nonlinear plasticity, variation in plastic traits across a gradient of conditions.
+1.	Intraspecific diversity of dominant species in native plant communities can modulate ecosystem function under both optimal and stressful conditions. Yet, few genotype by environment interaction studies quantify differences in the shape of plasticity functions or phenotypic breakpoints across genotypes in natural populations.
 
-•	We investigated the intraspecific trait differences, plasticity, and nonlinearities in plasticity under a controlled water availability gradient. We applied these concepts in the context of future climate change with three genotypes of Andropogon gerardii, the dominant warm-season grass of the North American tallgrass prairie. This ecosystem is likely to face more extreme and frequent droughts in the future.
+2.	Using three genotypes with a history of drought selection, we performed a greenhouse study on the dominant tallgrass prairie species Andropogon gerardii. We investigated phenotypic plasticity and recovery differences among genotypes across a water availability gradient, measuring growth-related, instantaneous, and cumulative phenotypes. To further understand genotype by environment effects, we quantified plasticity functions and breakpoints among genotypes. 
 
-•	Nonlinear plasticity in morphological and physiological traits was widespread and differed across genotypes, highlighting the influence of relatively small changes in water availability on intraspecific diversity. Genotypes also differed in reproductive strategy, but all recovered similarly following drought. 
+3.	Like other studies, we found strong evidence for phenotypic and plasticity differences among genotypes. However, we also found nonlinear plasticity functions and breakpoints were common across phenotypes, especially relative growth rates, biomass allocation, and root architecture. Drought selected genotypes were also more likely to flower during recovery, but all genotypes were resilient to drought across treatments. 
 
-•	For the first time, we demonstrate that nonlinear plasticity may help explain intraspecific diversity and patterns of selection within a population. A better understanding of intraspecific diversity and trait variation in this grass species will provide more mechanistic insight into its ability to moderate community changes in the tallgrass prairie under future droughts.
+4.	We demonstrate that plasticity functions may help explain intraspecific diversity, patterns of selection, and nonlinear community responses to more variable rainfall within an experimental population. In particular, plasticity functions can help disentangle drought/variability tolerance versus acquisitive strategies. A better understanding of intraspecific diversity in this grass species will provide more mechanistic insight into its ability to buffer ecosystem changes and provide resiliency in the tallgrass prairie under future droughts.
 
-**Data available upon request**
