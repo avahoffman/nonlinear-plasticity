@@ -69,7 +69,7 @@ ggsave(file = "figures/breakpoints.pdf", units = c("mm"), width = 180)
 
 # Recovery effects ----
 make_effect_plot(recovery = T)  + theme(legend.position = "bottom")
-ggsave(file = "figures/recovery_trt.pdf", units = c("mm"), width = 180, height = 80)
+ggsave(file = "figures/recovery_trt.pdf", units = c("mm"), width = 135, height = 80)
 
 # Plot phenotypes by treatment ----
 cycle_phenotype_plots()
